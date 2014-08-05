@@ -1,0 +1,10 @@
+Changes
+lib/Bible/OBML/HTML.pm
+lib/Bible/OBML.pm
+lib/Bible/OBML/Reference.pm
+Makefile.PL
+MANIFEST
+README
+t/Bible/OBML/HTML.t
+t/Bible/OBML/Reference.t
+t/Bible/OBML.t
