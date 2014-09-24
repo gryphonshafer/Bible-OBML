@@ -2,3 +2,6 @@ Revision history for Bible::OBML
 
 1.01    Mon Aug  4 16:30:15 PDT 2014
         First version, released on an unsuspecting world.
+
+1.02    Wed Sep 24 16:00:58 PDT 2014
+        Some OCD cleanup; addition of Travis and Coveralls.

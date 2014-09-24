@@ -4,7 +4,7 @@ use List::MoreUtils 'firstidx';
 
 with 'Throwable';
 
-our $VERSION = '1.01';
+our $VERSION = '1.02';
 
 has bible => ( is => 'ro', isa => 'ArrayRef[ArrayRef[Str]]', default => sub { [
     [ 'Genesis', 'Ge', 'Gen' ],
@@ -213,8 +213,9 @@ sub parse {
 
 __PACKAGE__->meta->make_immutable;
 1;
-__END__
+
 =pod
+
 =head1 NAME
 
 Bible::OBML::Reference - Simple Bible reference parser
@@ -285,6 +286,13 @@ longer acronym. The books (as arrayrefs) are listed in Bible order. For example:
 
 L<Bible::OBML>.
 
+You can also look for information at:
+
+    GitHub: https://github.com/gryphonshafer/Bible-OBML
+    AnnoCPAN: http://annocpan.org/dist/Bible-OBML
+    CPAN Ratings: http://cpanratings.perl.org/m/Bible-OBML
+    Search CPAN: http://search.cpan.org/dist/Bible-OBML
+
 =head1 AUTHOR
 
 Gryphon Shafer E<lt>gryphon@cpan.orgE<gt>.
@@ -294,7 +302,6 @@ Gryphon Shafer E<lt>gryphon@cpan.orgE<gt>.
 =head1 LICENSE
 
 This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.8.4 or,
-at your option, any later version of Perl 5 you may have available.
+it under the same terms as Perl itself.
 
 =cut

@@ -7,7 +7,7 @@ use Bible::OBML::HTML;
 
 with 'Throwable';
 
-our $VERSION = '1.01';
+our $VERSION = '1.02';
 
 has reference => (
     is      => 'ro',
@@ -468,8 +468,9 @@ sub canonicalize {
 
 __PACKAGE__->meta->make_immutable;
 1;
-__END__
+
 =pod
+
 =head1 NAME
 
 Bible::OBML - Open Bible Markup Language parser and renderer
@@ -641,6 +642,13 @@ instance of L<Bible::OBML::HTML>.
 
 L<Bible::OBML::Reference>, L<Bible::OBML::HTML>.
 
+You can also look for information at:
+
+    GitHub: https://github.com/gryphonshafer/Bible-OBML
+    AnnoCPAN: http://annocpan.org/dist/Bible-OBML
+    CPAN Ratings: http://cpanratings.perl.org/m/Bible-OBML
+    Search CPAN: http://search.cpan.org/dist/Bible-OBML
+
 =head1 AUTHOR
 
 Gryphon Shafer E<lt>gryphon@cpan.orgE<gt>.
@@ -650,7 +658,6 @@ Gryphon Shafer E<lt>gryphon@cpan.orgE<gt>.
 =head1 LICENSE
 
 This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.8.4 or,
-at your option, any later version of Perl 5 you may have available.
+it under the same terms as Perl itself.
 
 =cut

@@ -1,4 +1,4 @@
-Bible::OBML - Open Bible Markup Language parser and renderer
+﻿# Bible::OBML - Open Bible Markup Language parser and renderer
 
 This module provides methods that support parsing and rendering Open Bible
 Markup Language (OBML). OBML is a pure-ASCII-text markup way to represent Bible
@@ -7,10 +7,12 @@ to Markdown in that it provides a human-readable text file allowing for simple
 and direct editing of content while maintaining context, footnotes,
 cross-references, "red text", and quotes.
 
+[![Build Status](https://travis-ci.org/gryphonshafer/Bible-OBML.svg)](https://travis-ci.org/gryphonshafer/Bible-OBML)
+[![Coverage Status](https://coveralls.io/repos/gryphonshafer/Bible-OBML/badge.png)](https://coveralls.io/r/gryphonshafer/Bible-OBML)
 
-DESCRIPTION
+## Description
 
-=head2 Open Bible Markup Language (OBML)
+### Open Bible Markup Language (OBML)
 
 OBML makes the assumption that content will exist in one text file per chapter,
 the text file will be ASCII, and content mark-up will conform to the
@@ -83,8 +85,7 @@ arrayrefs around some number of strings. The "reference" key will always be
 a hashref with 3 keys. The structure of the values inside the arrayrefs of
 "header" and "content" can be (and usually are) nested.
 
-
-INSTALLATION
+## Installation
 
 To install this module, run the following commands:
 
@@ -93,8 +94,7 @@ To install this module, run the following commands:
     make test
     make install
 
-
-SUPPORT AND DOCUMENTATION
+## Support and Documentation
 
 After installing, you can find documentation for this module with the
 perldoc command.
@@ -103,23 +103,14 @@ perldoc command.
 
 You can also look for information at:
 
-    RT, CPAN's request tracker
-        http://rt.cpan.org/NoAuth/Bugs.html?Dist=Bible-OBML
+- [GitHub](https://github.com/gryphonshafer/Bible-OBML "GitHub")
+- [AnnoCPAN](http://annocpan.org/dist/Bible-OBML "AnnoCPAN")
+- [CPAN Ratings](http://cpanratings.perl.org/m/Bible-OBML "CPAN Ratings")
+- [Search CPAN](http://search.cpan.org/dist/Bible-OBML "Search CPAN")
 
-    AnnoCPAN, Annotated CPAN documentation
-        http://annocpan.org/dist/Bible-OBML
+## Author and License
 
-    CPAN Ratings
-        http://cpanratings.perl.org/m/Bible-OBML
-
-    Search CPAN
-        http://search.cpan.org/dist/Bible-OBML
-
-
-AUTHOR AND LICENSE
-
-Gryphon Shafer, gryphon@cpan.org
+Gryphon Shafer, [gryphon@cpan.org](mailto:gryphon@cpan.org "Email Gryphon Shafer")
 
 This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.8.4 or,
-at your option, any later version of Perl 5 you may have available.
+it under the same terms as Perl itself.
