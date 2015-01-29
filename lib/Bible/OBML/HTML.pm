@@ -216,8 +216,12 @@ __END__
 
 =pod
 
+=begin :prelude
+
 =for test_synopsis
 my( $obml, $filename, $data, $skyp_smartify );
+
+=end :prelude
 
 =head1 SYNOPSIS
 

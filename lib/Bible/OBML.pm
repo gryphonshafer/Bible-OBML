@@ -485,8 +485,12 @@ __END__
 
 =end :badges
 
+=begin :prelude
+
 =for test_synopsis
 my( $obml_text_content, $data_structure, $skip_wrapping, $content, $smart_content );
+
+=end :prelude
 
 =head1 SYNOPSIS
 
