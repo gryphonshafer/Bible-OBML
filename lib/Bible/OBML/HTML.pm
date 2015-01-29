@@ -216,10 +216,10 @@ __END__
 
 =pod
 
-=head1 SYNOPSIS
-
 =for test_synopsis
 my( $obml, $filename, $data, $skyp_smartify );
+
+=head1 SYNOPSIS
 
     use Bible::OBML::HTML;
     my $self = Bible::OBML::HTML->new;
@@ -300,7 +300,5 @@ You can also look for additional information at:
 * L<AnnoCPAN|http://annocpan.org/dist/Bible-OBML>
 * L<Travis CI|https://travis-ci.org/gryphonshafer/Bible-OBML>
 * L<Coveralls|https://coveralls.io/r/gryphonshafer/Bible-OBML>
-
-=for Pod::Coverage BUILD is_authed json passwd ua user
 
 =cut

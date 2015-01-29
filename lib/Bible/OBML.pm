@@ -485,10 +485,10 @@ __END__
 
 =end :badges
 
-=head1 SYNOPSIS
-
 =for test_synopsis
 my( $obml_text_content, $data_structure, $skip_wrapping, $content, $smart_content );
+
+=head1 SYNOPSIS
 
     use Bible::OBML;
     my $self = Bible::OBML->new;
@@ -667,7 +667,5 @@ You can also look for additional information at:
 * L<AnnoCPAN|http://annocpan.org/dist/Bible-OBML>
 * L<Travis CI|https://travis-ci.org/gryphonshafer/Bible-OBML>
 * L<Coveralls|https://coveralls.io/r/gryphonshafer/Bible-OBML>
-
-=for Pod::Coverage BUILD is_authed json passwd ua user
 
 =cut

@@ -4,12 +4,27 @@ Bible::OBML - Manipulate Google/GMail Tasks
 
 # VERSION
 
-version 1.03
+version 1.04
 
 [![Build Status](https://travis-ci.org/gryphonshafer/Bible-OBML.svg)](https://travis-ci.org/gryphonshafer/Bible-OBML)
 [![Coverage Status](https://coveralls.io/repos/gryphonshafer/Bible-OBML/badge.png)](https://coveralls.io/r/gryphonshafer/Bible-OBML)
 
 # SYNOPSIS
+
+    use Bible::OBML;
+    my $self = Bible::OBML->new;
+
+    my $data_structure    = $self->parse($obml_text_content);
+    my $obml_text_content = $self->render( $data_structure, $skip_wrapping );
+
+    my $content_with_smart_quotes    = $self->smartify($content);
+    my $content_without_smart_quotes = $self->desmartify($smart_content);
+
+    $self->canonicalize( $input_file, $output_file, $skip_wrapping );
+
+    # ...and because re-inventing the wheel is fun...
+    my $file_content = $self->read_file($filename);
+    $self->write_file( $filename, $content );
 
 # DESCRIPTION
 
@@ -92,21 +107,6 @@ Note that even in the simplest of cases, both "header" and "content" will be
 arrayrefs around some number of strings. The "reference" key will always be
 a hashref with 3 keys. The structure of the values inside the arrayrefs of
 "header" and "content" can be (and usually are) nested.
-
-    use Bible::OBML;
-    my $self = Bible::OBML->new;
-
-    my $data_structure    = $self->parse($obml_text_content);
-    my $obml_text_content = $self->render( $data_structure, $skip_wrapping );
-
-    my $content_with_smart_quotes    = $self->smartify($content);
-    my $content_without_smart_quotes = $self->desmartify($smart_content);
-
-    $self->canonicalize( $input_file, $output_file, $skip_wrapping );
-
-    # ...and because re-inventing the wheel is fun...
-    my $file_content = $self->read_file($filename);
-    $self->write_file( $filename, $content );
 
 # METHODS
 

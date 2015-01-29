@@ -1,6 +1,7 @@
 Revision history for Bible::OBML
 
 {{$NEXT}}
+        - Fixed POD rendering issue.
 
 1.03      2015-01-28 22:36:11-08:00 America/Los_Angeles
         - Implementing use of Dist::Zilla.
