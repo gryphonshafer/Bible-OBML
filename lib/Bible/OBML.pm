@@ -1,5 +1,5 @@
 package Bible::OBML;
-# ABSTRACT: Manipulate Google/GMail Tasks
+# ABSTRACT: Open Bible Markup Language parser and renderer
 
 use strict;
 use warnings;

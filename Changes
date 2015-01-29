@@ -1,6 +1,7 @@
 Revision history for Bible::OBML
 
 {{$NEXT}}
+        - Fix POD error that talked about wrong module (resolves issue #1)
 
 1.04      2015-01-28 23:09:25-08:00 America/Los_Angeles
         - Fixed POD rendering issue.

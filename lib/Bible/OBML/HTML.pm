@@ -1,5 +1,5 @@
 package Bible::OBML::HTML;
-# ABSTRACT: Manipulate Google/GMail Tasks
+# ABSTRACT: Render OBML as HTML
 
 use strict;
 use warnings;

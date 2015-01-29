@@ -1,5 +1,5 @@
 package Bible::OBML::Reference;
-# ABSTRACT: Manipulate Google/GMail Tasks
+# ABSTRACT: Simple Bible reference parser
 
 use strict;
 use warnings;

@@ -10,7 +10,7 @@ use ExtUtils::MakeMaker;
 
 
 my %WriteMakefileArgs = (
-  "ABSTRACT" => "Manipulate Google/GMail Tasks",
+  "ABSTRACT" => "Open Bible Markup Language parser and renderer",
   "AUTHOR" => "Gryphon Shafer <gryphon\@cpan.org>",
   "CONFIGURE_REQUIRES" => {
     "ExtUtils::MakeMaker" => 0
@@ -39,7 +39,7 @@ my %WriteMakefileArgs = (
     "Test::Most" => 0,
     "constant" => 0
   },
-  "VERSION" => "1.04",
+  "VERSION" => "1.05",
   "test" => {
     "TESTS" => "t/*.t t/Bible/*.t t/Bible/OBML/*.t"
   }
