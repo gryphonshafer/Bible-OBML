@@ -1,13 +1,18 @@
 package Bible::OBML;
+# ABSTRACT: Manipulate Google/GMail Tasks
+
+use strict;
+use warnings;
+
 use Moose;
 use Text::Balanced qw( extract_delimited extract_bracketed );
 use Text::Wrap 'wrap';
 use Bible::OBML::Reference;
 use Bible::OBML::HTML;
 
-with 'Throwable';
+# VERSION
 
-our $VERSION = '1.02';
+with 'Throwable';
 
 has reference => (
     is      => 'ro',
@@ -468,14 +473,25 @@ sub canonicalize {
 
 __PACKAGE__->meta->make_immutable;
 1;
+__END__
 
 =pod
 
-=head1 NAME
+=begin :badges
 
-Bible::OBML - Open Bible Markup Language parser and renderer
+=for markdown
+[![Build Status](https://travis-ci.org/gryphonshafer/Bible-OBML.svg)](https://travis-ci.org/gryphonshafer/Bible-OBML)
+[![Coverage Status](https://coveralls.io/repos/gryphonshafer/Bible-OBML/badge.png)](https://coveralls.io/r/gryphonshafer/Bible-OBML)
+
+=end :badges
 
 =head1 SYNOPSIS
+
+=for test_synopsis
+my( $obml_text_content, $data_structure, $skip_wrapping, $content, $smart_content );
+
+    use Bible::OBML;
+    my $self = Bible::OBML->new;
 
     my $data_structure    = $self->parse($obml_text_content);
     my $obml_text_content = $self->render( $data_structure, $skip_wrapping );
@@ -642,22 +658,16 @@ instance of L<Bible::OBML::HTML>.
 
 L<Bible::OBML::Reference>, L<Bible::OBML::HTML>.
 
-You can also look for information at:
+You can also look for additional information at:
 
-    GitHub: https://github.com/gryphonshafer/Bible-OBML
-    AnnoCPAN: http://annocpan.org/dist/Bible-OBML
-    CPAN Ratings: http://cpanratings.perl.org/m/Bible-OBML
-    Search CPAN: http://search.cpan.org/dist/Bible-OBML
+=for :list
+* L<GitHub|https://github.com/gryphonshafer/Bible-OBML>
+* L<CPAN|http://search.cpan.org/dist/Bible-OBML>
+* L<MetaCPAN|https://metacpan.org/pod/Bible::OBML>
+* L<AnnoCPAN|http://annocpan.org/dist/Bible-OBML>
+* L<Travis CI|https://travis-ci.org/gryphonshafer/Bible-OBML>
+* L<Coveralls|https://coveralls.io/r/gryphonshafer/Bible-OBML>
 
-=head1 AUTHOR
-
-Gryphon Shafer E<lt>gryphon@cpan.orgE<gt>.
-
-    code('Perl') || die;
-
-=head1 LICENSE
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself.
+=for Pod::Coverage BUILD is_authed json passwd ua user
 
 =cut

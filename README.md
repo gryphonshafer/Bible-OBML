@@ -1,4 +1,17 @@
-﻿# Bible::OBML - Open Bible Markup Language parser and renderer
+# NAME
+
+Bible::OBML - Manipulate Google/GMail Tasks
+
+# VERSION
+
+version 1.03
+
+[![Build Status](https://travis-ci.org/gryphonshafer/Bible-OBML.svg)](https://travis-ci.org/gryphonshafer/Bible-OBML)
+[![Coverage Status](https://coveralls.io/repos/gryphonshafer/Bible-OBML/badge.png)](https://coveralls.io/r/gryphonshafer/Bible-OBML)
+
+# SYNOPSIS
+
+# DESCRIPTION
 
 This module provides methods that support parsing and rendering Open Bible
 Markup Language (OBML). OBML is a pure-ASCII-text markup way to represent Bible
@@ -7,12 +20,7 @@ to Markdown in that it provides a human-readable text file allowing for simple
 and direct editing of content while maintaining context, footnotes,
 cross-references, "red text", and quotes.
 
-[![Build Status](https://travis-ci.org/gryphonshafer/Bible-OBML.svg)](https://travis-ci.org/gryphonshafer/Bible-OBML)
-[![Coverage Status](https://coveralls.io/repos/gryphonshafer/Bible-OBML/badge.png)](https://coveralls.io/r/gryphonshafer/Bible-OBML)
-
-## Description
-
-### Open Bible Markup Language (OBML)
+## Open Bible Markup Language (OBML)
 
 OBML makes the assumption that content will exist in one text file per chapter,
 the text file will be ASCII, and content mark-up will conform to the
@@ -85,32 +93,108 @@ arrayrefs around some number of strings. The "reference" key will always be
 a hashref with 3 keys. The structure of the values inside the arrayrefs of
 "header" and "content" can be (and usually are) nested.
 
-## Installation
+    use Bible::OBML;
+    my $self = Bible::OBML->new;
 
-To install this module, run the following commands:
+    my $data_structure    = $self->parse($obml_text_content);
+    my $obml_text_content = $self->render( $data_structure, $skip_wrapping );
 
-    perl Makefile.PL
-    make
-    make test
-    make install
+    my $content_with_smart_quotes    = $self->smartify($content);
+    my $content_without_smart_quotes = $self->desmartify($smart_content);
 
-## Support and Documentation
+    $self->canonicalize( $input_file, $output_file, $skip_wrapping );
 
-After installing, you can find documentation for this module with the
-perldoc command.
+    # ...and because re-inventing the wheel is fun...
+    my $file_content = $self->read_file($filename);
+    $self->write_file( $filename, $content );
 
-    perldoc Bible::OBML
+# METHODS
 
-You can also look for information at:
+## parse
 
-- [GitHub](https://github.com/gryphonshafer/Bible-OBML "GitHub")
-- [AnnoCPAN](http://annocpan.org/dist/Bible-OBML "AnnoCPAN")
-- [CPAN Ratings](http://cpanratings.perl.org/m/Bible-OBML "CPAN Ratings")
-- [Search CPAN](http://search.cpan.org/dist/Bible-OBML "Search CPAN")
+This method accepts a single text string consisting of OBML. It parses the
+string and returns a data structure as described above.
 
-## Author and License
+    my $data_structure = $self->parse($obml_text_content);
 
-Gryphon Shafer, [gryphon@cpan.org](mailto:gryphon@cpan.org "Email Gryphon Shafer")
+## render
 
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself.
+This method accepts a data structure that conforms to the example description
+above and returns a rendered OBML text output. It can optionally accept
+a second input, which is a boolean, which if true will cause the method to
+skip the line-wrapping step.
+
+    my $obml_text_content = $self->render( $data_structure, $skip_wrapping );
+
+Normally, this method will take the text output and wrap long lines. By passing
+a second value which is true, you can cause the method to skip that step.
+
+## smartify, desmartify
+
+The intent of OBML is to store ASCII text files. Some people prefer viewing
+content with so-called "smart" quotes in appropriate places. It is entirely
+possible to parse and render OBML as UTF8 that includes these so-called "smart"
+quotes. However, in the typical case of pure ASCII, you may want to add or
+remove so-called "smart" quotes. Here's how:
+
+    my $content_with_smart_quotes    = $self->smartify($content);
+    my $content_without_smart_quotes = $self->desmartify($smart_content);
+
+## canonicalize
+
+This method requires an input filename and an output filename. It will read
+the input file, assume it's OBML, parse it, clean-up references, and render
+it back to OBML, and save it to the output filename.
+
+    $self->canonicalize( $input_file, $output_file, $skip_wrapping );
+
+You can optionally add a third input which is a boolean indicating if you want
+the method to skip line-wrapping. (See the `render()` method for more
+information.)
+
+The point of this method is if you happen to be writing in OBML manually and
+want to ensure your content is canonical OBML.
+
+## read\_file, write\_file
+
+Just in case you want to read or write a file directly, here are two methods
+that reinvent the wheel.
+
+    my $file_content = $self->read_file($filename);
+    $self->write_file( $filename, $content );
+
+# ATTRIBUTES
+
+## reference
+
+This module has an attribute of "reference" which contains a reference to an
+instance of [Bible::OBML::Reference](https://metacpan.org/pod/Bible::OBML::Reference).
+
+## html
+
+This module has an attribute of "html" which contains a reference to an
+instance of [Bible::OBML::HTML](https://metacpan.org/pod/Bible::OBML::HTML).
+
+# SEE ALSO
+
+[Bible::OBML::Reference](https://metacpan.org/pod/Bible::OBML::Reference), [Bible::OBML::HTML](https://metacpan.org/pod/Bible::OBML::HTML).
+
+You can also look for additional information at:
+
+- [GitHub](https://github.com/gryphonshafer/Bible-OBML)
+- [CPAN](http://search.cpan.org/dist/Bible-OBML)
+- [MetaCPAN](https://metacpan.org/pod/Bible::OBML)
+- [AnnoCPAN](http://annocpan.org/dist/Bible-OBML)
+- [Travis CI](https://travis-ci.org/gryphonshafer/Bible-OBML)
+- [Coveralls](https://coveralls.io/r/gryphonshafer/Bible-OBML)
+
+# AUTHOR
+
+Gryphon Shafer <gryphon@cpan.org>
+
+# COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2015 by Gryphon Shafer.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.

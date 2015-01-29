@@ -1,4 +1,3 @@
-#!/usr/bin/env perl
 use Test::Most;
 use Test::Moose;
 

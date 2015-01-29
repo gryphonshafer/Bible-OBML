@@ -1,10 +1,15 @@
 package Bible::OBML::Reference;
+# ABSTRACT: Manipulate Google/GMail Tasks
+
+use strict;
+use warnings;
+
 use Moose;
 use List::MoreUtils 'firstidx';
 
-with 'Throwable';
+# VERSION
 
-our $VERSION = '1.02';
+with 'Throwable';
 
 has bible => ( is => 'ro', isa => 'ArrayRef[ArrayRef[Str]]', default => sub { [
     [ 'Genesis', 'Ge', 'Gen' ],
@@ -98,14 +103,16 @@ has bible => ( is => 'ro', isa => 'ArrayRef[ArrayRef[Str]]', default => sub { [
     sub books {
         my ( $self, $book ) = @_;
         return @books unless ($book);
-        return $book_lookup{$book} or $self->throw( qq{Failed to find "$book" during book lookup} );
+        return ( $book_lookup{$book} or $self->throw( qq{Failed to find "$book" during book lookup} ) );
     }
 
     sub acronyms {
         my ( $self, $acronym ) = @_;
         return @acronyms unless ($acronym);
-        return $acronym_lookup{$acronym}
-            or $self->throw( qq{Failed to find "$acronym" during acronym lookup} );
+        return (
+            $acronym_lookup{$acronym}
+            or $self->throw( qq{Failed to find "$acronym" during acronym lookup} )
+        );
     }
 }
 
@@ -213,14 +220,14 @@ sub parse {
 
 __PACKAGE__->meta->make_immutable;
 1;
+__END__
 
 =pod
 
-=head1 NAME
-
-Bible::OBML::Reference - Simple Bible reference parser
-
 =head1 SYNOPSIS
+
+    use Bible::OBML::Reference;
+    my $self = Bible::OBML::Reference->new;
 
     my $ref = $self->parse('Text that includes Romans 2:2-14 and other words');
 
@@ -286,22 +293,16 @@ longer acronym. The books (as arrayrefs) are listed in Bible order. For example:
 
 L<Bible::OBML>.
 
-You can also look for information at:
+You can also look for additional information at:
 
-    GitHub: https://github.com/gryphonshafer/Bible-OBML
-    AnnoCPAN: http://annocpan.org/dist/Bible-OBML
-    CPAN Ratings: http://cpanratings.perl.org/m/Bible-OBML
-    Search CPAN: http://search.cpan.org/dist/Bible-OBML
+=for :list
+* L<GitHub|https://github.com/gryphonshafer/Bible-OBML>
+* L<CPAN|http://search.cpan.org/dist/Bible-OBML>
+* L<MetaCPAN|https://metacpan.org/pod/Bible::OBML>
+* L<AnnoCPAN|http://annocpan.org/dist/Bible-OBML>
+* L<Travis CI|https://travis-ci.org/gryphonshafer/Bible-OBML>
+* L<Coveralls|https://coveralls.io/r/gryphonshafer/Bible-OBML>
 
-=head1 AUTHOR
-
-Gryphon Shafer E<lt>gryphon@cpan.orgE<gt>.
-
-    code('Perl') || die;
-
-=head1 LICENSE
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself.
+=for Pod::Coverage BUILD is_authed json passwd ua user
 
 =cut
