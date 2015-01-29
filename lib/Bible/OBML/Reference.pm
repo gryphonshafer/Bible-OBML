@@ -303,4 +303,6 @@ You can also look for additional information at:
 * L<Travis CI|https://travis-ci.org/gryphonshafer/Bible-OBML>
 * L<Coveralls|https://coveralls.io/r/gryphonshafer/Bible-OBML>
 
+=for Pod::Coverage BUILD
+
 =cut
