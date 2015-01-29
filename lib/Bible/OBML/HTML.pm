@@ -219,7 +219,7 @@ __END__
 =begin :prelude
 
 =for test_synopsis
-my( $obml, $filename, $data, $skyp_smartify );
+my( $obml, $filename, $data, $skip_smartify );
 
 =end :prelude
 

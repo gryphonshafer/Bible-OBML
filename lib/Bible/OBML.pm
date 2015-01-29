@@ -488,7 +488,10 @@ __END__
 =begin :prelude
 
 =for test_synopsis
-my( $obml_text_content, $data_structure, $skip_wrapping, $content, $smart_content );
+my(
+    $obml_text_content, $data_structure, $skip_wrapping, $skip_smartify,
+    $content, $smart_content, $input_file, $output_file, $filename,
+);
 
 =end :prelude
 
@@ -671,5 +674,7 @@ You can also look for additional information at:
 * L<AnnoCPAN|http://annocpan.org/dist/Bible-OBML>
 * L<Travis CI|https://travis-ci.org/gryphonshafer/Bible-OBML>
 * L<Coveralls|https://coveralls.io/r/gryphonshafer/Bible-OBML>
+
+=for Pod::Coverage BUILD
 
 =cut
