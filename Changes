@@ -1,6 +1,8 @@
 Revision history for Bible::OBML
 
 {{$NEXT}}
+
+1.03      2015-01-28 22:36:11-08:00 America/Los_Angeles
         - Implementing use of Dist::Zilla.
 
 1.02      Wed Sep 24 16:00:58 PDT 2014
