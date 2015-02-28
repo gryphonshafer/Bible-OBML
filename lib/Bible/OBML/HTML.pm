@@ -304,5 +304,7 @@ You can also look for additional information at:
 * L<AnnoCPAN|http://annocpan.org/dist/Bible-OBML>
 * L<Travis CI|https://travis-ci.org/gryphonshafer/Bible-OBML>
 * L<Coveralls|https://coveralls.io/r/gryphonshafer/Bible-OBML>
+* L<CPANTS|http://cpants.cpanauthors.org/dist/Bible-OBML>
+* L<CPAN Testers|http://www.cpantesters.org/distro/B/Bible-OBML.html>
 
 =cut
