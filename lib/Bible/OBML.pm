@@ -136,7 +136,7 @@ sub parse {
         for (
             [ 'footnote', '[]' ],
             [ 'crossreference', '{}' ],
-            [ 'red text', '<>' ],
+            [ 'red text', '*' ],
             [ 'italic', '^' ],
         ) {
             my $method = ( length( $_->[1] ) == 1 ) ? \&extract_delimited : \&extract_bracketed;
@@ -275,7 +275,7 @@ sub render {
         }
         elsif ( $node->[0] eq 'red text' ) {
             shift @$node;
-            return '<' . join( ' ', map { $render_block->($_) } @$node ) . '>';
+            return '*' . join( ' ', map { $render_block->($_) } @$node ) . '*';
         }
         elsif ( $node->[0] eq 'paragraph' ) {
             return "\n\n";
@@ -531,12 +531,16 @@ following specification:
     =...=    --> header
     {...}    --> crossreferences
     [...]    --> footnotes
-    <...>    --> red text
+    *...*    --> red text
     ^...^    --> italic
     4 spaces --> blockquote (line by line)
     6 spaces --> blockquote + indent (line by line)
-    |*|      --> notes the beginning of a verse (numbers ignored)
+    |*|      --> notes the beginning of a verse (the "*" must be a number)
     #        --> line comments
+
+HTML/XML-like markup can be used throughout the content for additional markup
+not defined by the above specification. When OBML is parsed, such markup
+is ignored and passed through, treated like any other content of the verse.
 
 An example of OBML follows, with several verses missing so as to save space:
 

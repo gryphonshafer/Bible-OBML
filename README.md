@@ -4,7 +4,7 @@ Bible::OBML - Open Bible Markup Language parser and renderer
 
 # VERSION
 
-version 1.05
+version 1.06
 
 [![Build Status](https://travis-ci.org/gryphonshafer/Bible-OBML.svg)](https://travis-ci.org/gryphonshafer/Bible-OBML)
 [![Coverage Status](https://coveralls.io/repos/gryphonshafer/Bible-OBML/badge.png)](https://coveralls.io/r/gryphonshafer/Bible-OBML)
@@ -45,12 +45,16 @@ following specification:
     =...=    --> header
     {...}    --> crossreferences
     [...]    --> footnotes
-    <...>    --> red text
+    *...*    --> red text
     ^...^    --> italic
     4 spaces --> blockquote (line by line)
     6 spaces --> blockquote + indent (line by line)
-    |*|      --> notes the beginning of a verse (numbers ignored)
+    |*|      --> notes the beginning of a verse (the "*" must be a number)
     #        --> line comments
+
+HTML/XML-like markup can be used throughout the content for additional markup
+not defined by the above specification. When OBML is parsed, such markup
+is ignored and passed through, treated like any other content of the verse.
 
 An example of OBML follows, with several verses missing so as to save space:
 
@@ -187,10 +191,12 @@ You can also look for additional information at:
 - [AnnoCPAN](http://annocpan.org/dist/Bible-OBML)
 - [Travis CI](https://travis-ci.org/gryphonshafer/Bible-OBML)
 - [Coveralls](https://coveralls.io/r/gryphonshafer/Bible-OBML)
+- [CPANTS](http://cpants.cpanauthors.org/dist/Bible-OBML)
+- [CPAN Testers](http://www.cpantesters.org/distro/B/Bible-OBML.html)
 
 # AUTHOR
 
-Gryphon Shafer <gryphon@cpan.org>
+Gryphon Shafer &lt;gryphon@cpan.org>
 
 # COPYRIGHT AND LICENSE
 
