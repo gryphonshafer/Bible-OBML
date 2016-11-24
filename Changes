@@ -1,6 +1,8 @@
 Revision history for Bible::OBML
 
 {{$NEXT}}
+
+1.06      2016-11-24 09:20:21-08:00 America/Los_Angeles
         - Change red text markers from <> to **
 
 1.05      2015-01-29 13:08:28-08:00 America/Los_Angeles
