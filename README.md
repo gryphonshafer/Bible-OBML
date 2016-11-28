@@ -4,7 +4,7 @@ Bible::OBML - Open Bible Markup Language parser and renderer
 
 # VERSION
 
-version 1.06
+version 1.07
 
 [![Build Status](https://travis-ci.org/gryphonshafer/Bible-OBML.svg)](https://travis-ci.org/gryphonshafer/Bible-OBML)
 [![Coverage Status](https://coveralls.io/repos/gryphonshafer/Bible-OBML/badge.png)](https://coveralls.io/r/gryphonshafer/Bible-OBML)
@@ -29,17 +29,16 @@ version 1.06
 # DESCRIPTION
 
 This module provides methods that support parsing and rendering Open Bible
-Markup Language (OBML). OBML is a pure-ASCII-text markup way to represent Bible
-content, one whole text file per chapter. The goal or purpose of OBML is similar
-to Markdown in that it provides a human-readable text file allowing for simple
-and direct editing of content while maintaining context, footnotes,
+Markup Language (OBML). OBML is a text markup way to represent Bible content,
+one whole text file per chapter. The goal or purpose of OBML is similar to
+Markdown in that it provides a human-readable text file allowing for simple and
+direct editing of content while maintaining context, footnotes,
 cross-references, "red text", and quotes.
 
 ## Open Bible Markup Language (OBML)
 
-OBML makes the assumption that content will exist in one text file per chapter,
-the text file will be ASCII, and content mark-up will conform to the
-following specification:
+OBML makes the assumption that content will exist in one text file per chapter
+and content mark-up will conform to the following specification:
 
     ~...~    --> material reference
     =...=    --> header
@@ -135,11 +134,11 @@ a second value which is true, you can cause the method to skip that step.
 
 ## smartify, desmartify
 
-The intent of OBML is to store ASCII text files. Some people prefer viewing
-content with so-called "smart" quotes in appropriate places. It is entirely
-possible to parse and render OBML as UTF8 that includes these so-called "smart"
-quotes. However, in the typical case of pure ASCII, you may want to add or
-remove so-called "smart" quotes. Here's how:
+The intent of OBML is to store simple text files that you can use a basic text
+editor on. Some people prefer viewing content with so-called "smart" quotes in
+appropriate places. It is entirely possible to parse and render OBML as UTF8
+that includes these so-called "smart" quotes. However, in the typical case of
+pure ASCII, you may want to add or remove so-called "smart" quotes. Here's how:
 
     my $content_with_smart_quotes    = $self->smartify($content);
     my $content_without_smart_quotes = $self->desmartify($smart_content);
