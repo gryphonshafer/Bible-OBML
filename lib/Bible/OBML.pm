@@ -1,6 +1,7 @@
 package Bible::OBML;
 # ABSTRACT: Open Bible Markup Language parser and renderer
 
+use 5.012;
 use strict;
 use warnings;
 

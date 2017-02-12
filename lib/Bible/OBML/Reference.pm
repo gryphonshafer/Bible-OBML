@@ -1,6 +1,7 @@
 package Bible::OBML::Reference;
 # ABSTRACT: Simple Bible reference parser
 
+use 5.012;
 use strict;
 use warnings;
 
