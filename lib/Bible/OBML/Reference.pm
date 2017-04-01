@@ -258,7 +258,7 @@ You can also provide an optional second parameter, and if it is positive, the
 method will return acronyms instead of full book names. Also note that the
 method will return an arrayref insteaf an array if in scalar context.
 
-    my $ref = $self->parse('Text that includes Romans 2:2-14 and other words');
+    my $ref = $self->parse( 'Some text and Romans 2:2-14 and other words', 1 );
     # $ref->[0] now contains "Ro 2:2-14"
 
 =head2 books
