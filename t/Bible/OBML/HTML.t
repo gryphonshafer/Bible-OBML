@@ -287,8 +287,9 @@ sub main {
         q\</div>\,
     );
 
-    is( $self->from_data($data), $html, '$self->from_data($data)' );
-    is( $self->from_obml($content), $html, '$self->from_obml($content)' );
+    oldstyle_diff;
+    eq_or_diff( $self->from_data($data), $html, '$self->from_data($data)' );
+    eq_or_diff( $self->from_obml($content), $html, '$self->from_obml($content)' );
 
     done_testing();
     return 0;
