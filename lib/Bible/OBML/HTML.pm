@@ -2,8 +2,6 @@ package Bible::OBML::HTML;
 # ABSTRACT: Render OBML as HTML
 
 use 5.012;
-use strict;
-use warnings;
 
 use Moose;
 use Template;

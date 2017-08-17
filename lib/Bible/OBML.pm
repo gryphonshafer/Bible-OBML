@@ -2,14 +2,12 @@ package Bible::OBML;
 # ABSTRACT: Open Bible Markup Language parser and renderer
 
 use 5.012;
-use strict;
-use warnings;
 
 use Moose;
 use Text::Balanced qw( extract_delimited extract_bracketed );
 use Text::Wrap 'wrap';
-use Bible::OBML::Reference;
 use Bible::OBML::HTML;
+use Bible::Reference;
 
 # VERSION
 
@@ -17,8 +15,8 @@ with 'Throwable';
 
 has reference => (
     is      => 'ro',
-    isa     => 'Bible::OBML::Reference',
-    default => sub { Bible::OBML::Reference->new },
+    isa     => 'Bible::Reference',
+    default => sub { Bible::Reference->new( acronyms => 1 ) },
 );
 
 has html => (
@@ -149,7 +147,7 @@ sub parse {
 
             if ($bit) {
                 $bit = substr( $bit, 1, length($bit) - 2 );
-                $bit = $self->reference->parse( $bit, 1 ) if ( $_->[0] eq 'crossreference' );
+                $bit = [ $self->reference->clear->in($bit)->as_books ] if ( $_->[0] eq 'crossreference' );
 
                 return grep { $_ }
                     $parse_block->($entry),
@@ -655,11 +653,6 @@ that reinvent the wheel.
 
 =head1 ATTRIBUTES
 
-=head2 reference
-
-This module has an attribute of "reference" which contains a reference to an
-instance of L<Bible::OBML::Reference>.
-
 =head2 html
 
 This module has an attribute of "html" which contains a reference to an
@@ -667,7 +660,7 @@ instance of L<Bible::OBML::HTML>.
 
 =head1 SEE ALSO
 
-L<Bible::OBML::Reference>, L<Bible::OBML::HTML>.
+L<Bible::OBML::HTML>.
 
 You can also look for additional information at:
 
