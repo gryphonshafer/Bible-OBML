@@ -13,7 +13,7 @@ sub main {
     isa_ok( $self, PACKAGE );
 
     does_ok( $self, 'Throwable' );
-    has_attribute_ok( $self, $_, qq{attribute "$_" exists} ) for ( qw( obml ) );
+    has_attribute_ok( $self, $_, qq{attribute "$_" exists} ) for ( qw( obml settings template ) );
     can_ok( PACKAGE, $_ ) for ( qw( from_file from_obml from_data ) );
 
     my $content = join( "\n",
@@ -153,12 +153,12 @@ sub main {
         q\kept<sup class="obml_footnote"><a href="#fn5" title="5: or called" >[5]</a></sup> by<sup\,
         q\class="obml_footnote"><a href="#fn6" title="6: or for or in" >[6]</a></sup> Jesus Christ:<sup\,
         q\class="obml_crossreference"><a href="#cr4" title="4: Joh 17:12; 1Pt 1:5" >{4}</a></sup> </p><p>\,
-        q\</p> <div class="obml_header">The Sin and Punishment of the Ungodly</div>\,
-        q\<p> <sup class="obml_reference"><b>14</b></sup>Enoch,<sup class="obml_crossreference"><a href="#cr5"\,
-        q\title="5: Ge 5:18, 21-24" >{5}</a></sup> <i>the</i> seventh from Adam, also prophesied to these saying:\,
-        q\</p><p> <span class="obml_blockquote"> Behold, <i>the</i> Lord came with myriads of His saints<sup\,
-        q\class="obml_footnote"><a href="#fn7" title="7: or holy ones" >[7]</a></sup><sup\,
-        q\class="obml_crossreference"><a href="#cr6" title="6: Dt 33:2; Da 7:10; Mt 16:27; He 12:22" >{6}</a></sup>\,
+        q\</p> <div class="obml_header">The Sin and Punishment of the Ungodly</div> <p>\,
+        q\<sup class="obml_reference"><b>14</b></sup>Enoch,<sup class="obml_crossreference"><a href="#cr5" title="5: Ge\,
+        q\5:18, 21-24" >{5}</a></sup> <i>the</i> seventh from Adam, also prophesied to these saying: </p><p> <span\,
+        q\class="obml_blockquote"> Behold, <i>the</i> Lord came with myriads of His saints<sup class="obml_footnote"><a\,
+        q\href="#fn7" title="7: or holy ones" >[7]</a></sup><sup class="obml_crossreference"><a href="#cr6" title="6:\,
+        q\Dt 33:2; Da 7:10; Mt 16:27; He 12:22" >{6}</a></sup>\,
         q\<sup class="obml_reference"><b>15</b></sup>to do judgment against all<sup\,
         q\class="obml_crossreference"><a href="#cr7" title="7: 2Pt 2:6-9" >{7}</a></sup> and to rebuke all the ungodly\,
         q\<i>because of</i><sup class="obml_footnote"><a href="#fn8" title="8: or concerning" >[8]</a></sup> all the\,
@@ -180,8 +180,8 @@ sub main {
         q\class="obml_reference"><b>17</b></sup>But beloved, remember the words spoken before by the apostles<sup\,
         q\class="obml_crossreference"><a href="#cr13" title="13: Ep 4:11" >{13}</a></sup> of our Lord, Jesus\,
         q\Christ,<sup class="obml_crossreference"><a href="#cr14" title="14: He 2:3; 2Pt 3:2" >{14}</a></sup>\,
-        q\<sup class="obml_reference"><b>18</b></sup>because they told you that in\,
-        q\the last <i>days</i><sup class="obml_footnote"><a href="#fn14" title="14: literally at the last time"\,
+        q\<sup class="obml_reference"><b>18</b></sup>because they told you that in the\,
+        q\last <i>days</i><sup class="obml_footnote"><a href="#fn14" title="14: literally at the last time"\,
         q\>[14]</a></sup><sup class="obml_crossreference"><a href="#cr15" title="15: Ac 20:29; 1Ti 4:1; 2Ti 4:3; 2Pt\,
         q\3:3" >{15}</a></sup> <i>there</i> will be mockers following their own ungodly lusts.<sup\,
         q\class="obml_crossreference"><a href="#cr16" title="16: 2Pt 2:1; 2Pt 3:3" >{16}</a></sup> </p></div>\,
