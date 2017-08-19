@@ -13,7 +13,7 @@ sub main {
     isa_ok( $self, PACKAGE );
 
     does_ok( $self, 'Throwable' );
-    has_attribute_ok( $self, $_, qq{attribute "$_" exists} ) for ( qw( reference html ) );
+    has_attribute_ok( $self, $_, qq{attribute "$_" exists} ) for ( qw( html bible acronyms refs ) );
     can_ok( PACKAGE, $_ ) for ( qw(
         read_file write_file parse render canonicalize smartify desmartify
     ) );

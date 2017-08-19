@@ -4,26 +4,49 @@ package Bible::OBML;
 use 5.012;
 
 use Moose;
+use Moose::Util::TypeConstraints;
+use MooseX::Privacy;
 use Text::Balanced qw( extract_delimited extract_bracketed );
 use Text::Wrap 'wrap';
 use Bible::OBML::HTML;
-use Bible::Reference;
+use Bible::Reference 1.02;
 
 # VERSION
 
 with 'Throwable';
-
-has reference => (
-    is      => 'ro',
-    isa     => 'Bible::Reference',
-    default => sub { Bible::Reference->new( acronyms => 1 ) },
-);
 
 has html => (
     is      => 'ro',
     isa     => 'Bible::OBML::HTML',
     default => sub { Bible::OBML::HTML->new( obml => shift ) },
 );
+
+has bible    => is => 'rw', trigger => sub { shift->_update_ref }, isa => 'Str',  default => 'Protestant';
+has acronyms => is => 'rw', trigger => sub { shift->_update_ref }, isa => 'Bool', default => 1;
+
+has refs => (
+    is      => 'rw',
+    isa     => enum( [ qw( refs as_books as_chapters as_runs as_verses ) ] ),
+    default => 'as_books',
+);
+
+has _reference => (
+    is      => 'rw',
+    isa     => 'Bible::Reference',
+    default => sub { Bible::Reference->new( acronyms => 1 ) },
+    traits  => ['Private'],
+);
+
+sub BUILD {
+    shift->_update_ref;
+}
+
+private_method _update_ref => sub {
+    my ($self) = @_;
+
+    $self->_reference->bible( $self->bible );
+    $self->_reference->acronyms( $self->acronyms );
+};
 
 binmode( STDOUT, ':encoding(utf8)' );
 binmode( STDERR, ':encoding(utf8)' );
@@ -88,7 +111,7 @@ sub parse {
     $chapter = $1 if ( $book =~ s/\s*(\d+)\s*$// );
 
     $self->throw(qq{Book "$book" unknown; must use canonical book name})
-        unless ( grep { $_ eq $book } $self->reference->books );
+        unless ( grep { $_ eq $book } $self->_reference->books );
 
     my $parse_block;
     $parse_block = sub {
@@ -147,7 +170,10 @@ sub parse {
 
             if ($bit) {
                 $bit = substr( $bit, 1, length($bit) - 2 );
-                $bit = [ $self->reference->clear->in($bit)->as_books ] if ( $_->[0] eq 'crossreference' );
+                if ( $_->[0] eq 'crossreference' ) {
+                    my $refs = $self->refs;
+                    $bit = [ $self->_reference->clear->in($bit)->$refs ];
+                }
 
                 return grep { $_ }
                     $parse_block->($entry),
@@ -262,7 +288,12 @@ sub render {
         return $node unless ( ref $node );
 
         if ( $node->[0] eq 'crossreference' ) {
-            return '{' . join( '; ', map { $render_block->($_) } @{ $node->[1] } ) . '}';
+            my $refs = $self->refs;
+            return '{' . join( '; ',
+                $self->_reference->clear->in(
+                    map { $render_block->($_) } @{ $node->[1] }
+                )->$refs
+            ) . '}';
         }
         elsif ( $node->[0] eq 'footnote' ) {
             shift @$node;
@@ -658,9 +689,38 @@ that reinvent the wheel.
 This module has an attribute of "html" which contains a reference to an
 instance of L<Bible::OBML::HTML>.
 
+=head2 acronyms
+
+By default, references will be canonicalized in acronym form; however, you can
+change that by setting the value of this accessor.
+
+    $self->acronyms(1); # use acronyms; default
+    $self->acronyms(0); # use full book names
+
+=head2 refs
+
+This is an accessor to a string that informs the OBML parser and renderer how
+to group canonicalized references. The string must be one of the following:
+
+=for :list
+* refs
+* as_books (default)
+* as_chapters
+* as_runs
+* as_verses
+
+These directly correspond to methods from L<Bible::Reference>. See that
+module's documentation for details.
+
+=head2 bible
+
+This is an accessor to a string value representing one of the Bible types
+supported by L<Bible::Reference>. By default, this is "Protestant" as per the
+default in L<Bible::Reference>. See that module's documentation for details.
+
 =head1 SEE ALSO
 
-L<Bible::OBML::HTML>.
+L<Bible::OBML::HTML>, L<Bible::Reference>.
 
 You can also look for additional information at:
 
