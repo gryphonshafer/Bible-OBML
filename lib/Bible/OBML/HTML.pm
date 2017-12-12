@@ -316,7 +316,7 @@ You can get or set the Template Toolkit template text with this accessor.
 
 =head1 SEE ALSO
 
-L<Bible::OBML>, L<Bible::OBML::Reference>.
+L<Bible::OBML>, L<Bible::Reference>.
 
 You can also look for additional information at:
 
