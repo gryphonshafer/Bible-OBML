@@ -48,8 +48,7 @@ sub main {
         q\|17| But beloved, remember the words spoken before by the apostles {Ep 4:11} of\,
         q\our Lord, Jesus Christ, {He 2:3; 2Pt 3:2} |18| because they told you that in\,
         q\the last ^days^ [literally ^at the last time^] {Ac 20:29; 1Ti 4:1; 2Ti 4:3; 2Pt\,
-        q\3:3} ^there^ will be mockers following their own ungodly lusts. {2Pt 2:1; 2Pt\,
-        q\3:3}\,
+        q\3:3} ^there^ will be mockers following their own ungodly lusts. {2Pt 2:1, 3:3}\,
         q\\,
     );
 
@@ -132,7 +131,7 @@ sub main {
                 'crossreference', [ 'Ac 20:29', '1Ti 4:1', '2Ti 4:3', '2Pt 3:3' ] ],
                 [ 'italic', 'there' ],
                 'will be mockers following their own ungodly lusts.',
-                [ 'crossreference', [ '2Pt 2:1', '2Pt 3:3' ] ]
+                [ 'crossreference', [ '2Pt 2:1, 3:3' ] ]
             ]
         }
     ];
@@ -184,7 +183,7 @@ sub main {
         q\last <i>days</i><sup class="obml_footnote"><a href="#fn14" title="14: literally at the last time"\,
         q\>[14]</a></sup><sup class="obml_crossreference"><a href="#cr15" title="15: Ac 20:29; 1Ti 4:1; 2Ti 4:3; 2Pt\,
         q\3:3" >{15}</a></sup> <i>there</i> will be mockers following their own ungodly lusts.<sup\,
-        q\class="obml_crossreference"><a href="#cr16" title="16: 2Pt 2:1; 2Pt 3:3" >{16}</a></sup> </p></div>\,
+        q\class="obml_crossreference"><a href="#cr16" title="16: 2Pt 2:1, 3:3" >{16}</a></sup> </p></div>\,
         q\</div>\,
         q\<div class="obml_notes_title">Notes</div>\,
         q\<div class="obml_notes">\,
@@ -279,7 +278,7 @@ sub main {
         q\<li><a name="cr13">Ep 4:11</a></li>\,
         q\<li><a name="cr14">He 2:3; 2Pt 3:2</a></li>\,
         q\<li><a name="cr15">Ac 20:29; 1Ti 4:1; 2Ti 4:3; 2Pt 3:3</a></li>\,
-        q\<li><a name="cr16">2Pt 2:1; 2Pt 3:3</a></li>\,
+        q\<li><a name="cr16">2Pt 2:1, 3:3</a></li>\,
         q\</ol>\,
         q\</div>\,
         q\</div>\,

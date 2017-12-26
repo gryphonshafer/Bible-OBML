@@ -4,7 +4,7 @@ Bible::OBML - Open Bible Markup Language parser and renderer
 
 # VERSION
 
-version 1.07
+version 1.08
 
 [![Build Status](https://travis-ci.org/gryphonshafer/Bible-OBML.svg)](https://travis-ci.org/gryphonshafer/Bible-OBML)
 [![Coverage Status](https://coveralls.io/repos/gryphonshafer/Bible-OBML/badge.png)](https://coveralls.io/r/gryphonshafer/Bible-OBML)
@@ -168,19 +168,42 @@ that reinvent the wheel.
 
 # ATTRIBUTES
 
-## reference
-
-This module has an attribute of "reference" which contains a reference to an
-instance of [Bible::OBML::Reference](https://metacpan.org/pod/Bible::OBML::Reference).
-
 ## html
 
 This module has an attribute of "html" which contains a reference to an
 instance of [Bible::OBML::HTML](https://metacpan.org/pod/Bible::OBML::HTML).
 
+## acronyms
+
+By default, references will be canonicalized in acronym form; however, you can
+change that by setting the value of this accessor.
+
+    $self->acronyms(1); # use acronyms; default
+    $self->acronyms(0); # use full book names
+
+## refs
+
+This is an accessor to a string that informs the OBML parser and renderer how
+to group canonicalized references. The string must be one of the following:
+
+- refs
+- as\_books (default)
+- as\_chapters
+- as\_runs
+- as\_verses
+
+These directly correspond to methods from [Bible::Reference](https://metacpan.org/pod/Bible::Reference). See that
+module's documentation for details.
+
+## bible
+
+This is an accessor to a string value representing one of the Bible types
+supported by [Bible::Reference](https://metacpan.org/pod/Bible::Reference). By default, this is "Protestant" as per the
+default in [Bible::Reference](https://metacpan.org/pod/Bible::Reference). See that module's documentation for details.
+
 # SEE ALSO
 
-[Bible::OBML::Reference](https://metacpan.org/pod/Bible::OBML::Reference), [Bible::OBML::HTML](https://metacpan.org/pod/Bible::OBML::HTML).
+[Bible::OBML::HTML](https://metacpan.org/pod/Bible::OBML::HTML), [Bible::Reference](https://metacpan.org/pod/Bible::Reference).
 
 You can also look for additional information at:
 
@@ -195,11 +218,11 @@ You can also look for additional information at:
 
 # AUTHOR
 
-Gryphon Shafer &lt;gryphon@cpan.org>
+Gryphon Shafer <gryphon@cpan.org>
 
 # COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2015 by Gryphon Shafer.
+This software is copyright (c) 2018 by Gryphon Shafer.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

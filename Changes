@@ -1,6 +1,8 @@
 Revision history for Bible::OBML
 
 {{$NEXT}}
+        - Adding Perl versions to test; annual general update for 2018
+        - Repair/patch outdated tests due to Bible::Reference upgrade
 
 1.07      2016-11-28 11:53:46-08:00 America/Los_Angeles
         - Updated docs to skip mention of non-required ASCII-only requirement

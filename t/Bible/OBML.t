@@ -60,8 +60,7 @@ sub parse_render {
         q\|17| But beloved, remember the words spoken before by the apostles {Ep 4:11} of\,
         q\our Lord, Jesus Christ, {He 2:3; 2Pt 3:2} |18| because they told you that in\,
         q\the last ^days^ [literally ^at the last time^] {Ac 20:29; 1Ti 4:1; 2Ti 4:3; 2Pt\,
-        q\3:3} ^there^ will be mockers following their own ungodly lusts. {2Pt 2:1; 2Pt\,
-        q\3:3}\,
+        q\3:3} ^there^ will be mockers following their own ungodly lusts. {2Pt 2:1, 3:3}\,
         q\\,
     );
 
@@ -144,7 +143,7 @@ sub parse_render {
                 'crossreference', [ 'Ac 20:29', '1Ti 4:1', '2Ti 4:3', '2Pt 3:3' ] ],
                 [ 'italic', 'there' ],
                 'will be mockers following their own ungodly lusts.',
-                [ 'crossreference', [ '2Pt 2:1', '2Pt 3:3' ] ]
+                [ 'crossreference', [ '2Pt 2:1, 3:3' ] ]
             ]
         }
     ];
