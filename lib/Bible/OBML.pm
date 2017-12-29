@@ -48,9 +48,6 @@ private_method _update_ref => sub {
     $self->_reference->acronyms( $self->acronyms );
 };
 
-binmode( STDOUT, ':encoding(utf8)' );
-binmode( STDERR, ':encoding(utf8)' );
-
 sub read_file {
     my ( $self, $filename ) = @_;
     open( my $file, '<:encoding(utf8)', $filename ) or $self->throw($!);
