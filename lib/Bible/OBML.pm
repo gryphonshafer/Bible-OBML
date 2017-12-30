@@ -76,16 +76,19 @@ sub parse {
 
         if ( $line !~ /^\s*$/ ) {
             $space = ( $line =~ s/^([ ]+)// ) ? length $1 : 0;
+            $space = ( $space < 4 ) ? 0 : ( $space > 5 ) ? 6 : 4;
 
             if ( defined $last_space and $space != $last_space ) {
-                $rv = ( ' ' x $last_space ) . join( ' ', reverse @buffer ) . "\n";
+                $rv = ( ' ' x $last_space ) . join( ' ', reverse @buffer ) .
+                    ( ( ( $space and $last_space ) or ( not $space and not $last_space ) ) ? '' : '' );
                 @buffer = ();
             }
 
             push( @buffer, $line );
         }
         else {
-            $rv = ( ' ' x $last_space ) . join( ' ', reverse @buffer ) . "\n";
+            $rv = ( ' ' x $last_space ) . join( ' ', reverse @buffer ) .
+                ( ( ( $space and $last_space ) or ( not $space and not $last_space ) ) ? "\n" : '' );
             @buffer = ();
             $rv .= $line;
         }
