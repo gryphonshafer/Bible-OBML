@@ -329,7 +329,6 @@ sub render {
     };
 
     my %chapters;
-    my $verses_seen = 0;
     for my $verse (@$data) {
         unless ($content) {
             my $chapter = $verse->{reference}{book} . ' ' . $verse->{reference}{chapter};
@@ -342,10 +341,12 @@ sub render {
         $content .= ' ' if ( substr( $content, length($content) - 1, 1 ) ne "\n" );
 
         my $verse_content = $render_block->( $verse->{content} );
-        my $leader = ( $verse_content =~ s/^(\s*)// and not $verses_seen ) ? $1 : '';
+        my $leader = (
+            $verse_content =~ s/^(\s*)// and
+            substr( $content, length($content) - 1, 1 ) eq "\n"
+        ) ? $1 : '';
 
         $content .= $leader . '|' . $verse->{reference}{verse} . '| ' . $verse_content;
-        $verses_seen++;
     }
 
     $content =~ s/\{\s+/\{/g;
