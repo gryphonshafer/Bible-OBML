@@ -1,6 +1,8 @@
 Revision history for Bible::OBML
 
 {{$NEXT}}
+
+1.10      2018-01-04 18:33:33-08:00 America/Los_Angeles
         - Several fixes for edge-case parsing bugs with blocks
         - Fix for rendering spacing ahead of new lines
 
