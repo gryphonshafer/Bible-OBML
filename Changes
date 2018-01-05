@@ -1,6 +1,8 @@
 Revision history for Bible::OBML
 
 {{$NEXT}}
+        - Several fixes for edge-case parsing bugs with blocks
+        - Fix for rendering spacing ahead of new lines
 
 1.09      2017-12-29 14:02:20-08:00 America/Los_Angeles
         - Removed binmode call to set standard in/out to UTF8 encoding
