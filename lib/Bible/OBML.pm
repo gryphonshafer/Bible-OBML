@@ -705,9 +705,7 @@ You can also look for additional information at:
 
 =for :list
 * L<GitHub|https://github.com/gryphonshafer/Bible-OBML>
-* L<CPAN|http://search.cpan.org/dist/Bible-OBML>
 * L<MetaCPAN|https://metacpan.org/pod/Bible::OBML>
-* L<AnnoCPAN|http://annocpan.org/dist/Bible-OBML>
 * L<Travis CI|https://travis-ci.org/gryphonshafer/Bible-OBML>
 * L<Coveralls|https://coveralls.io/r/gryphonshafer/Bible-OBML>
 * L<CPANTS|http://cpants.cpanauthors.org/dist/Bible-OBML>
