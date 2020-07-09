@@ -4,7 +4,7 @@ Bible::OBML - Open Bible Markup Language parser and renderer
 
 # VERSION
 
-version 1.10
+version 1.11
 
 [![Build Status](https://travis-ci.org/gryphonshafer/Bible-OBML.svg)](https://travis-ci.org/gryphonshafer/Bible-OBML)
 [![Coverage Status](https://coveralls.io/repos/gryphonshafer/Bible-OBML/badge.png)](https://coveralls.io/r/gryphonshafer/Bible-OBML)
@@ -171,7 +171,7 @@ that reinvent the wheel.
 ## html
 
 This module has an attribute of "html" which contains a reference to an
-instance of [Bible::OBML::HTML](https://metacpan.org/pod/Bible::OBML::HTML).
+instance of [Bible::OBML::HTML](https://metacpan.org/pod/Bible%3A%3AOBML%3A%3AHTML).
 
 ## acronyms
 
@@ -192,25 +192,23 @@ to group canonicalized references. The string must be one of the following:
 - as\_runs
 - as\_verses
 
-These directly correspond to methods from [Bible::Reference](https://metacpan.org/pod/Bible::Reference). See that
+These directly correspond to methods from [Bible::Reference](https://metacpan.org/pod/Bible%3A%3AReference). See that
 module's documentation for details.
 
 ## bible
 
 This is an accessor to a string value representing one of the Bible types
-supported by [Bible::Reference](https://metacpan.org/pod/Bible::Reference). By default, this is "Protestant" as per the
-default in [Bible::Reference](https://metacpan.org/pod/Bible::Reference). See that module's documentation for details.
+supported by [Bible::Reference](https://metacpan.org/pod/Bible%3A%3AReference). By default, this is "Protestant" as per the
+default in [Bible::Reference](https://metacpan.org/pod/Bible%3A%3AReference). See that module's documentation for details.
 
 # SEE ALSO
 
-[Bible::OBML::HTML](https://metacpan.org/pod/Bible::OBML::HTML), [Bible::Reference](https://metacpan.org/pod/Bible::Reference).
+[Bible::OBML::HTML](https://metacpan.org/pod/Bible%3A%3AOBML%3A%3AHTML), [Bible::Reference](https://metacpan.org/pod/Bible%3A%3AReference).
 
 You can also look for additional information at:
 
 - [GitHub](https://github.com/gryphonshafer/Bible-OBML)
-- [CPAN](http://search.cpan.org/dist/Bible-OBML)
 - [MetaCPAN](https://metacpan.org/pod/Bible::OBML)
-- [AnnoCPAN](http://annocpan.org/dist/Bible-OBML)
 - [Travis CI](https://travis-ci.org/gryphonshafer/Bible-OBML)
 - [Coveralls](https://coveralls.io/r/gryphonshafer/Bible-OBML)
 - [CPANTS](http://cpants.cpanauthors.org/dist/Bible-OBML)
@@ -222,7 +220,7 @@ Gryphon Shafer <gryphon@cpan.org>
 
 # COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2018 by Gryphon Shafer.
+This software is copyright (c) 2020 by Gryphon Shafer.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

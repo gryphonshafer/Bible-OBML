@@ -1,46 +1,38 @@
 package Bible::OBML::HTML;
 # ABSTRACT: Render OBML as HTML
 
-use 5.012;
+use 5.014;
 
-use Moose;
+use exact;
+use exact::class;
 use Template;
 use Bible::OBML;
 
 # VERSION
 
-with 'Throwable';
+has obml => sub { Bible::OBML->new };
 
-has obml => ( is => 'ro', isa => 'Bible::OBML', default => sub { Bible::OBML->new } );
+has settings => sub { +{
+    FILTERS => {
+        verse_collapse => sub {
+            my ($text) = @_;
 
-has settings => (
-    is      => 'rw',
-    isa     => 'HashRef',
-    default => sub { +{
-        FILTERS => {
-            verse_collapse => sub {
-                my ($text) = @_;
+            $text =~ s/\s{2,}/ /msg;
+            $text =~ s/^\s+|\s+$//msg;
+            $text =~ s/\s+(?=<sup\b)|//msg;
+            $text =~ s/(?<=i>)\s+(?=[^\sa-zA-Z0-9])//msg;
 
-                $text =~ s/\s{2,}/ /msg;
-                $text =~ s/^\s+|\s+$//msg;
-                $text =~ s/\s+(?=<sup\b)|//msg;
-                $text =~ s/(?<=i>)\s+(?=[^\sa-zA-Z0-9])//msg;
-
-                return $text;
-            },
-            fn_tidy => sub {
-                my ($text) = @_;
-                $text =~ s/<[^>]*?>//g;
-                return $text;
-            }
+            return $text;
         },
-    } },
-);
+        fn_tidy => sub {
+            my ($text) = @_;
+            $text =~ s/<[^>]*?>//g;
+            return $text;
+        }
+    },
+} };
 
-has template => (
-    is      => 'rw',
-    isa     => 'Str',
-    default => q{
+has template => q{
         [%
             crossreferences = [];
             footnotes       = [];
@@ -175,11 +167,9 @@ has template => (
                 [% END %]
             </div>
         </div>
-    },
-);
+};
 
-sub from_file {
-    my ( $self, $file, $skip_smartify ) = @_;
+sub from_file ( $self, $file, $skip_smartify = undef ) {
     $self->throw('Data provided is not a filename') unless ( -f $file );
 
     my $obml = $self->obml->read_file($file);
@@ -187,8 +177,7 @@ sub from_file {
     return $self->_html( $self->obml->parse($obml) );
 }
 
-sub from_data {
-    my ( $self, $data, $skip_smartify ) = @_;
+sub from_data ( $self, $data, $skip_smartify = undef ) {
     $self->throw('Data provided is not an arrayref') unless ( ref($data) eq 'ARRAY' );
 
     $data = $self->obml->parse( $self->obml->smartify( $self->obml->render($data) ) )
@@ -197,16 +186,14 @@ sub from_data {
     return $self->_html($data);
 }
 
-sub from_obml {
-    my ( $self, $obml, $skip_smartify ) = @_;
+sub from_obml ( $self, $obml, $skip_smartify = undef ) {
     $self->throw('Data provided is not a string') if ( ref($obml) );
 
     $obml = $self->obml->smartify($obml) unless ($skip_smartify);
     return $self->_html( $self->obml->parse($obml) );
 }
 
-sub _html {
-    my ( $self, $content ) = @_;
+sub _html ( $self, $content ) {
     my $output = '';
 
     Template->new( $self->settings )->process(
@@ -220,7 +207,6 @@ sub _html {
     return $output;
 }
 
-__PACKAGE__->meta->make_immutable;
 1;
 __END__
 

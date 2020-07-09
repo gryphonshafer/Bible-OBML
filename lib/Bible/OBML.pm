@@ -1,11 +1,10 @@
 package Bible::OBML;
 # ABSTRACT: Open Bible Markup Language parser and renderer
 
-use 5.012;
+use 5.014;
 
-use Moose;
-use Moose::Util::TypeConstraints;
-use MooseX::Privacy;
+use exact;
+use exact::class;
 use Text::Balanced qw( extract_delimited extract_bracketed );
 use Text::Wrap 'wrap';
 use Bible::OBML::HTML;
@@ -14,57 +13,34 @@ use Clone 'clone';
 
 # VERSION
 
-with 'Throwable';
+has bible    => 'Protestant';
+has acronyms => 1;
+has refs     => 'as_books';
+has html     => sub { Bible::OBML::HTML->new( obml => shift ) };
 
-has html => (
-    is      => 'ro',
-    isa     => 'Bible::OBML::HTML',
-    default => sub { Bible::OBML::HTML->new( obml => shift ) },
-);
+has _reference => sub { Bible::Reference->new( acronyms => 1 ) };
 
-has bible    => is => 'rw', trigger => sub { shift->_update_ref }, isa => 'Str',  default => 'Protestant';
-has acronyms => is => 'rw', trigger => sub { shift->_update_ref }, isa => 'Bool', default => 1;
-
-has refs => (
-    is      => 'rw',
-    isa     => enum( [ qw( refs as_books as_chapters as_runs as_verses ) ] ),
-    default => 'as_books',
-);
-
-has _reference => (
-    is      => 'rw',
-    isa     => 'Bible::Reference',
-    default => sub { Bible::Reference->new( acronyms => 1 ) },
-    traits  => ['Private'],
-);
-
-sub BUILD {
-    shift->_update_ref;
-}
-
-private_method _update_ref => sub {
-    my ($self) = @_;
+sub new ( $self, @params ) {
+    $self = $self->SUPER::new(@params);
 
     $self->_reference->bible( $self->bible );
     $self->_reference->acronyms( $self->acronyms );
-};
 
-sub read_file {
-    my ( $self, $filename ) = @_;
-    open( my $file, '<:encoding(utf8)', $filename ) or $self->throw("Unable to read file $filename; $!");
+    return $self;
+}
+
+sub read_file ( $self, $filename ) {
+    open( my $file, '<:encoding(utf8)', $filename ) or croak "Unable to read file $filename; $!";
     return join( '', <$file> );
 }
 
-sub write_file {
-    my ( $self, $filename, $content ) = @_;
-    open( my $file, '>:encoding(utf8)', $filename ) or $self->throw("Unable to write file $filename; $!");
+sub write_file ( $self, $filename, $content ) {
+    open( my $file, '>:encoding(utf8)', $filename ) or croak "Unable to write file $filename; $!";
     print $file $content;
     return;
 }
 
-sub parse {
-    my ( $self, $content ) = @_;
-
+sub parse ( $self, $content ) {
     # remove comments
     $content =~ s/^\s*#.*?(?>\r?\n)//msg;
 
@@ -255,8 +231,7 @@ sub parse {
     return \@verses;
 }
 
-sub render {
-    my ( $self, $data, $skip_wrapping ) = @_;
+sub render ( $self, $data, $skip_wrapping = undef ) {
     my $content = '';
     $data = clone($data);
 
@@ -344,9 +319,7 @@ sub render {
     } split( /\n/, $content ) ) . "\n";
 }
 
-sub smartify {
-    my ( $self, $text ) = @_;
-
+sub smartify ( $self, $text ) {
     # extraction
 
     my ( $processed, $extract, @bits, @sub_bits );
@@ -457,14 +430,12 @@ sub smartify {
     return $text;
 }
 
-sub desmartify {
-    my ( $self, $text ) = @_;
+sub desmartify ( $self, $text ) {
     ( my $new_text = $text ) =~ tr/\x{201c}\x{201d}\x{2018}\x{2019}/""''/;
     return $new_text;
 }
 
-sub canonicalize {
-    my ( $self, $input_file, $output_file, $skip_wrapping ) = @_;
+sub canonicalize ( $self, $input_file, $output_file = undef, $skip_wrapping = undef ) {
     $output_file ||= $input_file;
 
     $self->write_file(
@@ -480,7 +451,6 @@ sub canonicalize {
     return;
 }
 
-__PACKAGE__->meta->make_immutable;
 1;
 __END__
 

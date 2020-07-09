@@ -1,6 +1,7 @@
 Revision history for Bible::OBML
 
 {{$NEXT}}
+        - Remove Moose dependency; replace with exact and exact::class
         - Update Travis YAML
 
 1.10      2018-01-04 18:33:33-08:00 America/Los_Angeles
