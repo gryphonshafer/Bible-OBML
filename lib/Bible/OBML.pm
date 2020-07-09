@@ -20,7 +20,8 @@ has html     => sub { Bible::OBML::HTML->new( obml => shift ) };
 
 has _reference => sub { Bible::Reference->new( acronyms => 1 ) };
 
-sub new ( $self, @params ) {
+sub new {
+    my ( $self, @params ) = @_;
     $self = $self->SUPER::new(@params);
 
     $self->_reference->bible( $self->bible );
@@ -29,18 +30,21 @@ sub new ( $self, @params ) {
     return $self;
 }
 
-sub read_file ( $self, $filename ) {
+sub read_file {
+    my ( $self, $filename ) = @_;
     open( my $file, '<:encoding(utf8)', $filename ) or croak "Unable to read file $filename; $!";
     return join( '', <$file> );
 }
 
-sub write_file ( $self, $filename, $content ) {
+sub write_file {
+    my ( $self, $filename, $content ) = @_;
     open( my $file, '>:encoding(utf8)', $filename ) or croak "Unable to write file $filename; $!";
     print $file $content;
     return;
 }
 
-sub parse ( $self, $content ) {
+sub parse {
+    my ( $self, $content ) = @_;
     # remove comments
     $content =~ s/^\s*#.*?(?>\r?\n)//msg;
 
@@ -231,7 +235,8 @@ sub parse ( $self, $content ) {
     return \@verses;
 }
 
-sub render ( $self, $data, $skip_wrapping = undef ) {
+sub render {
+    my ( $self, $data, $skip_wrapping ) = @_;
     my $content = '';
     $data = clone($data);
 
@@ -319,7 +324,8 @@ sub render ( $self, $data, $skip_wrapping = undef ) {
     } split( /\n/, $content ) ) . "\n";
 }
 
-sub smartify ( $self, $text ) {
+sub smartify {
+    my ( $self, $text ) = @_;
     # extraction
 
     my ( $processed, $extract, @bits, @sub_bits );
@@ -430,12 +436,14 @@ sub smartify ( $self, $text ) {
     return $text;
 }
 
-sub desmartify ( $self, $text ) {
+sub desmartify {
+    my ( $self, $text ) = @_;
     ( my $new_text = $text ) =~ tr/\x{201c}\x{201d}\x{2018}\x{2019}/""''/;
     return $new_text;
 }
 
-sub canonicalize ( $self, $input_file, $output_file = undef, $skip_wrapping = undef ) {
+sub canonicalize {
+    my ( $self, $input_file, $output_file, $skip_wrapping ) = @_;
     $output_file ||= $input_file;
 
     $self->write_file(

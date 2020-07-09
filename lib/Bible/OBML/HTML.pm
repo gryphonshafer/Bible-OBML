@@ -169,7 +169,8 @@ has template => q{
         </div>
 };
 
-sub from_file ( $self, $file, $skip_smartify = undef ) {
+sub from_file {
+    my ( $self, $file, $skip_smartify ) = @_;
     $self->throw('Data provided is not a filename') unless ( -f $file );
 
     my $obml = $self->obml->read_file($file);
@@ -177,7 +178,8 @@ sub from_file ( $self, $file, $skip_smartify = undef ) {
     return $self->_html( $self->obml->parse($obml) );
 }
 
-sub from_data ( $self, $data, $skip_smartify = undef ) {
+sub from_data {
+    my ( $self, $data, $skip_smartify ) = @_;
     $self->throw('Data provided is not an arrayref') unless ( ref($data) eq 'ARRAY' );
 
     $data = $self->obml->parse( $self->obml->smartify( $self->obml->render($data) ) )
@@ -186,14 +188,16 @@ sub from_data ( $self, $data, $skip_smartify = undef ) {
     return $self->_html($data);
 }
 
-sub from_obml ( $self, $obml, $skip_smartify = undef ) {
+sub from_obml {
+    my ( $self, $obml, $skip_smartify ) = @_;
     $self->throw('Data provided is not a string') if ( ref($obml) );
 
     $obml = $self->obml->smartify($obml) unless ($skip_smartify);
     return $self->_html( $self->obml->parse($obml) );
 }
 
-sub _html ( $self, $content ) {
+sub _html {
+    my ( $self, $content ) = @_;
     my $output = '';
 
     Template->new( $self->settings )->process(
