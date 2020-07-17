@@ -311,7 +311,13 @@ sub render {
     $content =~ s/\s+\}/\}/g;
     $content =~ s/\[\s+/\[/g;
     $content =~ s/\s+\]/\]/g;
-    $content =~ s/(?<=\^)\s+(?=[\,\;\.\-\!\?]+\s)//g;
+    $content =~ s/\(\s+/\(/g;
+    $content =~ s/\s+\)/\)/g;
+
+    $content =~ s/(\s*(?:\[[^\]]*\]|\{[^\}]*\}))\s*([\,\;\.\!\?]+)/$2$1/g;
+    $content =~ s/\s+(?=[\,\;\.\!\?]+)//g;
+    $content =~ s/\s+(?=[\-]+\s)//g;
+
     $content =~ s/\s+$/\n/msg;
     $content .= "\n";
 
