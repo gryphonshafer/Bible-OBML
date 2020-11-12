@@ -1,7 +1,7 @@
 package Bible::OBML::HTML;
 # ABSTRACT: Render OBML as HTML
 
-use 5.014;
+use 5.020;
 
 use exact;
 use exact::class;

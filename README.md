@@ -4,10 +4,10 @@ Bible::OBML - Open Bible Markup Language parser and renderer
 
 # VERSION
 
-version 1.14
+version 1.15
 
-[![Build Status](https://travis-ci.org/gryphonshafer/Bible-OBML.svg)](https://travis-ci.org/gryphonshafer/Bible-OBML)
-[![Coverage Status](https://coveralls.io/repos/gryphonshafer/Bible-OBML/badge.png)](https://coveralls.io/r/gryphonshafer/Bible-OBML)
+[![build](https://github.com/gryphonshafer/Bible-OBML/workflows/build/badge.svg)](https://github.com/gryphonshafer/Bible-OBML/actions?query=workflow%3Abuild)
+[![codecov](https://codecov.io/gh/gryphonshafer/Bible-OBML/graph/badge.svg)](https://codecov.io/gh/gryphonshafer/Bible-OBML)
 
 # SYNOPSIS
 
@@ -209,8 +209,8 @@ You can also look for additional information at:
 
 - [GitHub](https://github.com/gryphonshafer/Bible-OBML)
 - [MetaCPAN](https://metacpan.org/pod/Bible::OBML)
-- [Travis CI](https://travis-ci.org/gryphonshafer/Bible-OBML)
-- [Coveralls](https://coveralls.io/r/gryphonshafer/Bible-OBML)
+- [GitHub Actions](https://github.com/gryphonshafer/Bible-OBML/actions)
+- [Codecov](https://codecov.io/gh/gryphonshafer/Bible-OBML)
 - [CPANTS](http://cpants.cpanauthors.org/dist/Bible-OBML)
 - [CPAN Testers](http://www.cpantesters.org/distro/B/Bible-OBML.html)
 
@@ -220,7 +220,7 @@ Gryphon Shafer <gryphon@cpan.org>
 
 # COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2020 by Gryphon Shafer.
+This software is copyright (c) 2021 by Gryphon Shafer.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

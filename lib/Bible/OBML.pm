@@ -1,14 +1,14 @@
 package Bible::OBML;
 # ABSTRACT: Open Bible Markup Language parser and renderer
 
-use 5.014;
+use 5.020;
 
 use exact;
 use exact::class;
 use Text::Balanced qw( extract_delimited extract_bracketed );
 use Text::Wrap 'wrap';
 use Bible::OBML::HTML;
-use Bible::Reference 1.02;
+use Bible::Reference 1.05;
 use Clone 'clone';
 
 # VERSION
