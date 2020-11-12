@@ -313,8 +313,8 @@ You can also look for additional information at:
 =for :list
 * L<GitHub|https://github.com/gryphonshafer/Bible-OBML>
 * L<MetaCPAN|https://metacpan.org/pod/Bible::OBML>
-* L<Travis CI|https://travis-ci.org/gryphonshafer/Bible-OBML>
-* L<Coveralls|https://coveralls.io/r/gryphonshafer/Bible-OBML>
+* L<GitHub Actions|https://github.com/gryphonshafer/Bible-OBML/actions>
+* L<Codecov|https://codecov.io/gh/gryphonshafer/Bible-OBML>
 * L<CPANTS|http://cpants.cpanauthors.org/dist/Bible-OBML>
 * L<CPAN Testers|http://www.cpantesters.org/distro/B/Bible-OBML.html>
 

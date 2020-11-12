@@ -473,8 +473,8 @@ __END__
 =begin :badges
 
 =for markdown
-[![Build Status](https://travis-ci.org/gryphonshafer/Bible-OBML.svg)](https://travis-ci.org/gryphonshafer/Bible-OBML)
-[![Coverage Status](https://coveralls.io/repos/gryphonshafer/Bible-OBML/badge.png)](https://coveralls.io/r/gryphonshafer/Bible-OBML)
+[![build](https://github.com/gryphonshafer/Bible-OBML/workflows/build/badge.svg)](https://github.com/gryphonshafer/Bible-OBML/actions?query=workflow%3Abuild)
+[![codecov](https://codecov.io/gh/gryphonshafer/Bible-OBML/graph/badge.svg)](https://codecov.io/gh/gryphonshafer/Bible-OBML)
 
 =end :badges
 
@@ -690,8 +690,8 @@ You can also look for additional information at:
 =for :list
 * L<GitHub|https://github.com/gryphonshafer/Bible-OBML>
 * L<MetaCPAN|https://metacpan.org/pod/Bible::OBML>
-* L<Travis CI|https://travis-ci.org/gryphonshafer/Bible-OBML>
-* L<Coveralls|https://coveralls.io/r/gryphonshafer/Bible-OBML>
+* L<GitHub Actions|https://github.com/gryphonshafer/Bible-OBML/actions>
+* L<Codecov|https://codecov.io/gh/gryphonshafer/Bible-OBML>
 * L<CPANTS|http://cpants.cpanauthors.org/dist/Bible-OBML>
 * L<CPAN Testers|http://www.cpantesters.org/distro/B/Bible-OBML.html>
 
