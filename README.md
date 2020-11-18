@@ -6,7 +6,7 @@ Bible::OBML - Open Bible Markup Language parser and renderer
 
 version 1.15
 
-[![build](https://github.com/gryphonshafer/Bible-OBML/workflows/build/badge.svg)](https://github.com/gryphonshafer/Bible-OBML/actions?query=workflow%3Abuild)
+[![test](https://github.com/gryphonshafer/Bible-OBML/workflows/test/badge.svg)](https://github.com/gryphonshafer/Bible-OBML/actions?query=workflow%3Atest)
 [![codecov](https://codecov.io/gh/gryphonshafer/Bible-OBML/graph/badge.svg)](https://codecov.io/gh/gryphonshafer/Bible-OBML)
 
 # SYNOPSIS
