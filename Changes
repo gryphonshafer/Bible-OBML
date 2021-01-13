@@ -1,6 +1,7 @@
 Revision history for Bible::OBML
 
 {{$NEXT}}
+        - Override some minimum version reqs in dist.ini
 
 1.15      2021-01-12 09:00:29-08:00 America/Los_Angeles
         - Migrate to Test2::V0

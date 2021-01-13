@@ -22,8 +22,8 @@ my %WriteMakefileArgs = (
     "Template" => 0,
     "Text::Balanced" => 0,
     "Text::Wrap" => 0,
-    "exact" => 0,
-    "exact::class" => 0
+    "exact" => "1.14",
+    "exact::class" => "1.10"
   },
   "TEST_REQUIRES" => {
     "File::Spec" => 0,
@@ -34,7 +34,7 @@ my %WriteMakefileArgs = (
     "strict" => 0,
     "warnings" => 0
   },
-  "VERSION" => "1.15",
+  "VERSION" => "1.16",
   "test" => {
     "TESTS" => "t/*.t t/Bible/*.t t/Bible/OBML/*.t"
   }
@@ -52,8 +52,8 @@ my %FallbackPrereqs = (
   "Test::More" => 0,
   "Text::Balanced" => 0,
   "Text::Wrap" => 0,
-  "exact" => 0,
-  "exact::class" => 0,
+  "exact" => "1.14",
+  "exact::class" => "1.10",
   "strict" => 0,
   "warnings" => 0
 );
