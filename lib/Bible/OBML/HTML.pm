@@ -6,11 +6,13 @@ use 5.020;
 use exact;
 use exact::class;
 use Template;
-use Bible::OBML;
 
 # VERSION
 
-has obml => sub { Bible::OBML->new };
+has obml => sub {
+    require Bible::OBML;
+    Bible::OBML->new;
+};
 
 has settings => sub { +{
     FILTERS => {

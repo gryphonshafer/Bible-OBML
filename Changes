@@ -1,6 +1,7 @@
 Revision history for Bible::OBML
 
 {{$NEXT}}
+        - Switch from use to require to resolve -c check
 
 1.16      2021-01-13 11:01:18-08:00 America/Los_Angeles
         - Override some minimum version reqs in dist.ini
