@@ -5,7 +5,12 @@ use 5.020;
 
 use exact;
 use exact::class;
-use Template;
+
+BEGIN {
+    local $SIG{__WARN__} = sub {};
+    require Template;
+    Template->import;
+}
 
 # VERSION
 
