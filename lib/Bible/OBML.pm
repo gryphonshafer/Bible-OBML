@@ -284,6 +284,13 @@ sub render {
         else {
             my $rendered_block = join( ' ', map { $render_block->($_) } @$node );
             $rendered_block =~ s/[ \t]*(\n+)[ \t]?/$1/g;
+
+            $rendered_block =~ s/[ \t]([^\w ]+)[ \t]*(\[[^\]]*\]|\{[^\}]*\})[ \t]*/ $1$2/g;
+            $rendered_block =~ s/[ \t]*(\[[^\]]*\]|\{[^\}]*\})[ \t]*([^\w ]+)[ \t]/$1$2 /g;
+
+            $rendered_block =~ s/^([^\w ]+)[ \t]*(\[[^\]]*\]|\{[^\}]*\})[ \t]*/$1$2/g;
+            $rendered_block =~ s/[ \t]*(\[[^\]]*\]|\{[^\}]*\})[ \t]*([^\w ]+)$/$1$2/g;
+
             return $rendered_block;
         }
     };
@@ -316,7 +323,6 @@ sub render {
     $content =~ s/\(\s+/\(/g;
     $content =~ s/\s+\)/\)/g;
 
-    $content =~ s/(\s*(?:\[[^\]]*\]|\{[^\}]*\}))\s*([\,\;\.\!\?]+)/$2$1/g;
     $content =~ s/\s+(?=[\,\;\.\!\?]+)//g;
     $content =~ s/\s+(?=[\-]+\s)//g;
 
