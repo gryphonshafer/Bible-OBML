@@ -5,473 +5,247 @@ use 5.020;
 
 use exact;
 use exact::class;
-use Text::Balanced qw( extract_delimited extract_bracketed );
+use Mojo::DOM;
+use Mojo::Util 'html_unescape';
 use Text::Wrap 'wrap';
-use Bible::Reference 1.05;
-use Clone 'clone';
 
 # VERSION
 
-has bible    => 'Protestant';
-has acronyms => 1;
-has refs     => 'as_books';
-has html     => sub {
-    require Bible::OBML::HTML;
-    Bible::OBML::HTML->new( obml => shift );
-};
+has _load        => {};
+has indent_width => 4;
 
-has _reference => sub { Bible::Reference->new( acronyms => 1 ) };
+sub __ocd_tree ($node) {
+    my $new_node;
 
-sub new {
-    my ( $self, @params ) = @_;
-    $self = $self->SUPER::new(@params);
+    if ( 'tag' eq shift @$node ) {
+        $new_node->{tag} = shift @$node;
 
-    $self->_reference->bible( $self->bible );
-    $self->_reference->acronyms( $self->acronyms );
+        my $attr = shift @$node;
+        $new_node->{attr} = $attr if (%$attr);
 
-    return $self;
+        shift @$node;
+
+        my $children = [ grep { defined } map { __ocd_tree($_) } @$node ];
+        $new_node->{children} = $children if (@$children);
+    }
+    else {
+        $new_node->{text} = $node->[0] if ( $node->[0] ne "\n\n" );
+    }
+
+    return $new_node;
 }
 
-sub read_file {
-    my ( $self, $filename ) = @_;
-    open( my $file, '<', $filename ) or croak "Unable to read file $filename; $!";
-    return join( '', <$file> );
+sub __html_tree ($node) {
+    if ( $node->{tag} ) {
+        if ( $node->{children} ) {
+            my $attr = ( $node->{attr} )
+                ? ' ' . join( ' ', map { $_ . '="' . $node->{attr}{$_} . '"' } keys %{ $node->{attr} } )
+                : '';
+
+            return join( '',
+                '<', $node->{tag}, $attr, '>',
+                ( map { __html_tree($_) } @{ $node->{children} } ),
+                '</', $node->{tag}, '>',
+            );
+        }
+        else {
+            return '<' . $node->{tag} . '>';
+        }
+    }
+    else {
+        return $node->{text};
+    }
 }
 
-sub write_file {
-    my ( $self, $filename, $content ) = @_;
-    open( my $file, '>', $filename ) or croak "Unable to write file $filename; $!";
-    print $file $content;
-    return;
+sub __cleanup_html ($html) {
+    # spacing cleanup
+    $html =~ s/\s+/ /g;
+    $html =~ s/(?:^\s+|\s+$)//mg;
+    $html =~ s/^[ ]+//mg;
+
+    # protect against inadvertent OBML
+    $html =~ s/~/-/g;
+    $html =~ s/`/'/g;
+    $html =~ s/\|//g;
+    $html =~ s/\\/ /g;
+    $html =~ s/\*//g;
+    $html =~ s/\{/(/g;
+    $html =~ s/\}/)/g;
+    $html =~ s/\[/(/g;
+    $html =~ s/\]/)/g;
+
+    $html =~ s|<p>|\n\n<p>|g;
+    $html =~ s|<sub_header>|\n\n<sub_header>|g;
+    $html =~ s|<header>|\n\n<header>|g;
+    $html =~ s|<br>\s*|<br>\n|g;
+    $html =~ s|[ ]+</p>|</p>|g;
+    $html =~ s|[ ]+</obml>|</obml>|;
+
+    # trim spaces at line ends
+    $html =~ s/[ ]+$//mg;
+
+    return $html;
 }
 
-sub parse {
-    my ( $self, $content ) = @_;
+sub __clean_html_to_data ($clean_html) {
+    return __ocd_tree( Mojo::DOM->new($clean_html)->at('obml')->tree );
+}
+
+sub __data_to_clean_html ($data) {
+    return __cleanup_html( __html_tree($data) );
+}
+
+sub _clean_html_to_obml ( $self, $html ) {
+    my $dom = Mojo::DOM->new($html);
+
+    # append a trailing <br> inside any <p> with a <br> for later wrapping reasons
+    $dom->find('p')->grep( sub { $_->find('br')->size } )->each( sub { $_->append_content('<br>') } );
+
+    my $obml = html_unescape( $dom->to_string );
+
+    # de-XML
+    $obml =~ s|</?obml>||g;
+    $obml =~ s|</?p>||g;
+    $obml =~ s|</?woj>|\*|g;
+    $obml =~ s|</?i>|\^|g;
+    $obml =~ s|</?small_caps>|\\|g;
+    $obml =~ s|<reference>\s*|~ |g;
+    $obml =~ s|\s*</reference>| ~|g;
+    $obml =~ s!<verse_number>\s*!|!g;
+    $obml =~ s!\s*</verse_number>!| !g;
+    $obml =~ s|<sub_header>\s*|== |g;
+    $obml =~ s|\s*</sub_header>| ==|g;
+    $obml =~ s|<header>\s*|= |g;
+    $obml =~ s|\s*</header>| =|g;
+    $obml =~ s|<crossref>\s*|\{|g;
+    $obml =~ s|\s*</crossref>|\}|g;
+    $obml =~ s|<footnote>\s*|\[|g;
+    $obml =~ s|\s*</footnote>|\]|g;
+    $obml =~ s|^<indent level="(\d+)">| ' ' x ( $self->indent_width * $1 ) |mge;
+    $obml =~ s|<indent level="\d+">||g;
+    $obml =~ s|</indent>||g;
+
+    # wrap lines that don't end in <br>
+    $obml = join( "\n", map {
+        unless ( s|<br>|| ) {
+            s/^(\s+)//;
+            $Text::Wrap::columns = 80 - length( $1 || '' );
+            wrap( $1, $1, $_ );
+        }
+        else {
+            $_;
+        }
+    } split( /\n/, $obml ) ) . "\n";
+
+    chomp $obml;
+    return $obml;
+}
+
+sub _obml_to_clean_html ( $self, $obml ) {
+    # spacing cleanup
+    $obml =~ s/\t/    /g;
+    $obml =~ s/\n[ \t]+\n/\n\n/mg;
+
     # remove comments
-    $content =~ s/^\s*#.*?(?>\r?\n)//msg;
+    $obml =~ s/^\s*#.*?(?>\r?\n)//msg;
 
     # "unwrap" wrapped lines
-    $content =~ s/\n[ \t]+\n/\n\n/mg;
-    $content =~ s/\n[ ]{6,}(?=\S)/ "\n" . ( ' ' x 6 ) /mge;
-    $content =~ s/\n[ ]{3,5}(?=\S)/ "\n" . ( ' ' x 4 ) /mge;
-    $content =~ s/\n[ ]{1,2}(?=\S)/\n/mg;
-    $content =~ s/(?<=\N)[ ]*\n(?=\S)/ /mg;
-    my @content;
-    for my $line ( split( /\n/, $content ) ) {
-        unless (
-            @content and $content[-1] and
-            (
-                ( $content[-1] =~ /^[ ]{4}\S/ and $line =~ /^[ ]{4}\S/ ) or
-                ( $content[-1] =~ /^[ ]{6}\S/ and $line =~ /^[ ]{6}\S/ )
-            )
-        ) {
-            push( @content, $line );
+    my @obml;
+    for my $line ( split( /\n/, $obml ) ) {
+        if ( not @obml or not length $line or not length $obml[-1] ) {
+            push( @obml, $line );
         }
         else {
-            $line =~ s/^[ ]+//;
-            $content[-1] .= ' ' . $line;
-        }
-    }
-    $content = join( "\n", @content );
+            my ($last_line_indent) = $obml[-1] =~ /^([ ]*)/;
+            my ($this_line_indent) = $line     =~ /^([ ]*)/;
 
-    # pull out the reference base
-    ( my $reference_base = ( $content =~ s/~([^~]+)~//ms ) ? $1 : '' ) =~ s/^\s+|\s+$//g;
-
-    # warn on any obvious errors
-    croak('Missing reference base marker') unless ($reference_base);
-    croak('Multiple reference base markers') if ( $content =~ /~[^~]+~/ms );
-
-    # split out book and chapter; check book name for validity
-    my $book = $reference_base;
-    my $chapter = 1;
-    $chapter = $1 if ( $book =~ s/\s*(\d+)\s*$// );
-    croak(qq{Book "$book" unknown; must use canonical book name})
-        unless ( grep { $_ eq $book } $self->_reference->books );
-
-    # code to recursively for a given block or sub-block
-    my $parse_block;
-    $parse_block = sub {
-        my ($block_content) = @_;
-        my @parts;
-
-        if ( @parts = split( /(?:\s*\r?\n){2,}/, $block_content, 2 ) and @parts > 1 ) {
-            return grep { $_ }
-                $parse_block->( $parts[0] ),
-                ['paragraph'],
-                $parse_block->( $parts[1] );
-        }
-
-        if ( @parts = split( /(?:\s*\r?\n)/, $block_content, 2 ) and @parts > 1 ) {
-            my @parsed_parts = grep { $_ } map { $parse_block->($_) } @parts;
-
-            for ( my $i = 0; $i < $#parsed_parts; $i++ ) {
-                splice( @parsed_parts, $i + 1, 0, ['break'] ) if (
-                    ref( $parsed_parts[$i] ) and
-                    ref( $parsed_parts[ $i + 1 ] ) and
-                    (
-                        $parsed_parts[$i][0] =~ /^blockquote/ and
-                        $parsed_parts[ $i + 1 ][0] =~ /^blockquote/
-                    )
-                );
-            }
-
-            return @parsed_parts;
-        }
-
-        if ( $block_content =~ s/^(\s{2,})(?=\S)// ) {
-            my $size = length($1);
-            return [
-                ( ( $size == 4 ) ? 'blockquote' : 'blockquote_indent' ),
-                $parse_block->($block_content),
-            ];
-        }
-
-        for (
-            [ 'footnote', '[]' ],
-            [ 'crossreference', '{}' ],
-            [ 'red text', '*' ],
-            [ 'italic', '^' ],
-        ) {
-            my $method = ( length( $_->[1] ) == 1 ) ? \&extract_delimited : \&extract_bracketed;
-            my ( $bit, $remainder, $entry ) = $method->(
-                $block_content,
-                $_->[1],
-                '(?s).*?(?=\\' . substr( $_->[1], 0, 1 ) . ')',
-            );
-
-            if ($bit) {
-                $bit = substr( $bit, 1, length($bit) - 2 );
-                if ( $_->[0] eq 'crossreference' ) {
-                    my $refs = $self->refs;
-                    $bit = [ $self->_reference->clear->in($bit)->$refs ];
-                }
-
-                return grep { $_ }
-                    $parse_block->($entry),
-                    [ $_->[0], $parse_block->($bit) ],
-                    $parse_block->($remainder);
-            }
-        }
-
-        $block_content =~ s/\s{2,}/ /msg;
-        $block_content =~ s/^\s+|\s+$//msg;
-        return $block_content;
-    };
-
-    my ( @verses, $header_text );
-    my $space_cache = '';
-
-    # split up the content into verse-sized blocks
-    for my $block ( map { split(/(?=\=[^=]+\=)/) } split( /(?=[ ]*\|\d+\|)/, $content ) ) {
-        # record block end-of-line type
-        my $eol = ( $block =~ /\n{2,}$/ ) ? 'paragraph' : ( $block =~ /\n$/ ) ? 'break' : '';
-
-        # preserve leading spaces for a given block/verse line
-        next if ( not @verses and not $block =~ /\w/ );
-        unless ( $block =~ /\w/ ) {
-            $space_cache .= $block;
-            next;
-        }
-        $block = $space_cache . $block;
-        $space_cache = '';
-
-        # check for a header and store for later if exists
-        if ( $block =~ /\=\s*([^=]+?)\s*\=/ ) {
-            croak('Multiple back-to-back headers found') if ($header_text);
-            $header_text = [ $parse_block->($1) ];
-            next;
-        }
-
-        # find the verse number
-        my $verse_number = $1 if ( $block =~ s/\|\s*(\d+)\s*\|\s*// );
-        croak('Failed to find verse number') unless ($verse_number);
-
-        # parse the block into a verse data structure
-        my $verse = {
-            reference => {
-                book    => $book,
-                chapter => $chapter,
-                verse   => $verse_number,
-            },
-            content => [ $parse_block->($block) ],
-        };
-
-        # set the header in the verse data stucture if a header was found
-        if ($header_text) {
-            $verse->{header} = $header_text;
-            undef $header_text;
-        }
-
-        # if there's an unfinished blockquote from the previous verse,
-        # ensure it's copied into this verse...
-        if (
-            @verses and $verses[-1] and ref( $verses[-1]{content} ) and ref( $verses[-1]{content}[-1] ) and
-            (
-                $verses[-1]{content}[-1][0] eq 'blockquote' or
-                $verses[-1]{content}[-1][0] eq 'blockquote_indent'
-            ) and not ref( $verse->{content}[0] )
-        ) {
-            $verse->{content}[0] = [ $verses[-1]{content}[-1][0], $verse->{content}[0] ];
-
-            splice( @{ $verse->{content} }, 1, 0, ['break'] ) if (
-                $verse->{content}[0] and $verse->{content}[1] and
-                ref( $verse->{content}[0] ) and ref( $verse->{content}[1] ) and
-                (
-                    $verse->{content}[0][0] =~ /^blockquote/ and
-                    $verse->{content}[1][0] =~ /^blockquote/
-                )
-            );
-        }
-
-        push( @{ $verse->{content} }, [$eol] ) if (
-            $eol and
-            (
-                not ( ref $verse->{content}[-1] eq 'ARRAY' and @{ $verse->{content}[-1] } )
-                or $verse->{content}[-1][0] ne $eol
-            )
-        );
-
-        push( @verses, $verse );
-    }
-
-    return \@verses;
-}
-
-sub render {
-    my ( $self, $data, $skip_wrapping ) = @_;
-    my $content = '';
-    $data = clone($data);
-
-    my $render_block;
-    $render_block = sub {
-        my ($node) = @_;
-        return $node unless ( ref $node );
-
-        if ( $node->[0] eq 'crossreference' ) {
-            my $refs = $self->refs;
-            return '{' . join( '; ',
-                $self->_reference->clear->in(
-                    map { $render_block->($_) } @{ $node->[1] }
-                )->$refs
-            ) . '}';
-        }
-        elsif ( $node->[0] eq 'footnote' ) {
-            shift @$node;
-            return '[' . join( ' ', map { $render_block->($_) } @$node ) . ']';
-        }
-        elsif ( $node->[0] eq 'italic' ) {
-            shift @$node;
-            return '^' . join( ' ', map { $render_block->($_) } @$node ) . '^';
-        }
-        elsif ( $node->[0] eq 'red text' ) {
-            shift @$node;
-            return '*' . join( ' ', map { $render_block->($_) } @$node ) . '*';
-        }
-        elsif ( $node->[0] eq 'paragraph' ) {
-            return "\n\n";
-        }
-        elsif ( $node->[0] eq 'break' ) {
-            return "\n";
-        }
-        elsif ( $node->[0] eq 'blockquote' ) {
-            shift @$node;
-            return ( ' ' x 4 ) . join( ' ', map { $render_block->($_) } @$node );
-        }
-        elsif ( $node->[0] eq 'blockquote_indent' ) {
-            shift @$node;
-            return ( ' ' x 6 ) . join( ' ', map { $render_block->($_) } @$node );
-        }
-        else {
-            my $rendered_block = join( ' ', map { $render_block->($_) } @$node );
-            $rendered_block =~ s/[ \t]*(\n+)[ \t]?/$1/g;
-
-            $rendered_block =~ s/[ \t]([^\w ]+)[ \t]*(\[[^\]]*\]|\{[^\}]*\})[ \t]*/ $1$2/g;
-            $rendered_block =~ s/[ \t]*(\[[^\]]*\]|\{[^\}]*\})[ \t]*([^\w ]+)[ \t]/$1$2 /g;
-
-            $rendered_block =~ s/^([^\w ]+)[ \t]*(\[[^\]]*\]|\{[^\}]*\})[ \t]*/$1$2/g;
-            $rendered_block =~ s/[ \t]*(\[[^\]]*\]|\{[^\}]*\})[ \t]*([^\w ]+)$/$1$2/g;
-
-            return $rendered_block;
-        }
-    };
-
-    my %chapters;
-    for my $verse (@$data) {
-        unless ($content) {
-            my $chapter = $verse->{reference}{book} . ' ' . $verse->{reference}{chapter};
-            croak('Appears to be multiple chapters in data; must be single chapter only')
-                if ( $chapters{$chapter}++ );
-            $content .= "~ $chapter ~\n\n";
-        }
-
-        $content .= '= ' . $render_block->( $verse->{header} ) . " =\n\n" if ( $verse->{header} );
-        $content .= ' ' if ( substr( $content, length($content) - 1, 1 ) ne "\n" );
-
-        my $verse_content = $render_block->( $verse->{content} );
-        my $leader = (
-            $verse_content =~ s/^(\s*)// and
-            substr( $content, length($content) - 1, 1 ) eq "\n"
-        ) ? $1 : '';
-
-        $content .= $leader . '|' . $verse->{reference}{verse} . '| ' . $verse_content;
-    }
-
-    $content =~ s/\{\s+/\{/g;
-    $content =~ s/\s+\}/\}/g;
-    $content =~ s/\[\s+/\[/g;
-    $content =~ s/\s+\]/\]/g;
-    $content =~ s/\(\s+/\(/g;
-    $content =~ s/\s+\)/\)/g;
-
-    $content =~ s/\s+(?=[\,\;\.\!\?]+)//g;
-    $content =~ s/\s+(?=[\-]+\s)//g;
-
-    $content =~ s/\s+$/\n/msg;
-    $content .= "\n";
-
-    return $content if ($skip_wrapping);
-
-    return join( "\n", map {
-        s/^(\s+)//;
-        $Text::Wrap::columns = 80 - length( $1 || '' );
-        wrap( $1, $1, $_ );
-    } split( /\n/, $content ) ) . "\n";
-}
-
-sub smartify {
-    my ( $self, $text ) = @_;
-    # extraction
-
-    my ( $processed, $extract, @bits, @sub_bits );
-
-    $extract = sub {
-        my ($type) = @_;
-
-        my $method = ( length( $type->[1] ) == 1 ) ? \&extract_delimited : \&extract_bracketed;
-        my ( $bit, $entry );
-        ( $bit, $text, $entry ) = $method->(
-            $text,
-            $type->[1],
-            '(?s).*?(?=\\' . substr( $type->[1], 0, 1 ) . ')',
-        );
-
-        if ($bit) {
-            $bit = substr( $bit, 1, length($bit) - 2 );
-
-            $processed .= $entry . ( ( length $type->[1] == 1 ) ? $type->[1] x 2 : $type->[1] );
-            push( @sub_bits, $bit );
-
-            $extract->($type);
-        }
-    };
-
-    for (
-        [ 'crossreference', '{}' ],
-        [ 'footnote', '[]' ],
-        [ 'header', '=' ],
-        [ 'material', '~' ],
-    ) {
-        $processed = '';
-        $extract->($_);
-        $text = $processed . $text;
-        push( @bits, reverse @sub_bits );
-        @sub_bits = ();
-    }
-
-    # conversion
-
-    my $convert = sub {
-        my ($content) = @_;
-
-        while (1) {
-            my ( $bit, $entry );
-            ( $bit, $content, $entry ) = extract_delimited(
-                $content,
-                '"',
-                '(?s).*?(?=\\")',
-            );
-
-            if ($bit) {
-                $bit = substr( $bit, 1, length($bit) - 2 );
-                $content = $entry . chr(8220) . $bit . chr(8221) . $content;
+            if ( length $last_line_indent == length $this_line_indent ) {
+                $line =~ s/^[ ]+//;
+                $obml[-1] .= ' ' . $line;
             }
             else {
-                last;
+                push( @obml, $line );
             }
         }
+    }
+    $obml = join( "\n", @obml );
 
-        $content =~ s/(?<=\w)\'(?=\w)/ chr(8217) /ge;
-        $content =~ s/\'(\S[^\']*\S)\'/ chr(8216) . $1 . chr(8217) /ge;
-        $content =~ s/\'/ chr(8217) /ge;
+    $obml =~ s|~+[ ]*([^~]+?)[ ]*~+|<reference>$1</reference>|g;
+    $obml =~ s|={2,}[ ]*([^=]+?)[ ]*={2,}|<sub_header>$1</sub_header>|g;
+    $obml =~ s|=[ ]*([^=]+?)[ ]*=|<header>$1</header>|g;
 
-        return $content;
-    };
+    $obml =~ s|^([ ]+)(\S.*)$|
+        '<indent level="'
+        . int( ( length($1) + $self->indent_width * 0.5 ) / $self->indent_width )
+        . '">'
+        . $2
+        . '</indent>'
+    |mge;
 
-    $text = $convert->($text);
-    @bits = map { $convert->($_) } @bits;
+    $obml =~ s|(\S)(?=\n\S)|$1<br>|g;
 
-    # recombining
+    $obml =~ s`(?:^|(?<=\n\n))(?!<(?:reference|sub_header|header)\b)`<p>`g;
+    $obml =~ s`(?<!</(?:reference|sub_header|header)>)(?:$|(?=\n\n))`</p>`g;
 
-    my $result;
-    my $recombine;
-    $recombine = sub {
-        my ($type) = @_;
+    $obml =~ s!\|(\d+)\|\s*!<verse_number>$1</verse_number>!g;
 
-        my $method = ( length( $type->[1] ) == 1 ) ? \&extract_delimited : \&extract_bracketed;
-        my ( $bit, $entry );
-        ( $bit, $text, $entry ) = $method->(
-            $text,
-            $type->[1],
-            '(?s).*?(?=\\' . substr( $type->[1], 0, 1 ) . ')',
-        );
+    $obml =~ s|\*([^\*]+)\*|<woj>$1</woj>|g;
+    $obml =~ s|\^([^\^]+)\^|<i>$1</i>|g;
+    $obml =~ s|\\([^\\]+)\\|<small_caps>$1</small_caps>|g;
 
-        if ($bit) {
-            my ( $start, $stop ) = ( length( $type->[1] ) == 1 )
-                ? ( ( $type->[1] ) x 2 )
-                : split( '', $type->[1] );
+    $obml =~ s|\{|<crossref>|g;
+    $obml =~ s|\}|</crossref>|g;
 
-            $result .= $entry . $start . pop(@bits) . $stop;
+    $obml =~ s|\[|<footnote>|g;
+    $obml =~ s|\]|</footnote>|g;
 
-            $recombine->($type);
+    return "<obml>$obml</obml>";
+}
+
+sub _accessor ( $self, $input = undef ) {
+    my $want = ( split( '::', ( caller(1) )[3] ) )[-1];
+
+    return $self->_load({ $want => $input }) if ($input);
+    return $self->_load->{data} if ( $want eq 'data' and $self->_load->{data} );
+
+    unless ( $self->_load->{canonical}{$want} ) {
+        if ( $self->_load->{html} ) {
+            $self->_load->{clean_html} //= __cleanup_html( $self->_load->{html} );
+
+            if ( $want eq 'obml' ) {
+                $self->_load->{canonical}{obml} = $self->_clean_html_to_obml( $self->_load->{clean_html} );
+            }
+            elsif ( $want eq 'data' or $want eq 'html' ) {
+                $self->_load->{data} = __clean_html_to_data( $self->_load->{clean_html} );
+
+                $self->_load->{canonical}{html} = __data_to_clean_html( $self->_load->{data} )
+                    if ( $want eq 'html' );
+            }
         }
-    };
+        elsif ( $self->_load->{data} ) {
+            $self->_load->{canonical}{html} = __data_to_clean_html( $self->_load->{data} );
 
-    for (
-        [ 'material', '~' ],
-        [ 'header', '=' ],
-        [ 'footnote', '[]' ],
-        [ 'crossreference', '{}' ],
-    ) {
-        $result = '';
-        $recombine->($_);
-        $text = $result . $text;
+            $self->_load->{canonical}{obml} = $self->_clean_html_to_obml( $self->_load->{canonical}{html} )
+                if ( $want eq 'obml' );
+        }
+        elsif ( $self->_load->{obml} ) {
+            $self->_load->{canonical}{html} = $self->_obml_to_clean_html( $self->_load->{obml} );
+
+            if ( $want eq 'obml' ) {
+                $self->_load->{canonical}{obml} = $self->_clean_html_to_obml( $self->_load->{canonical}{html} );
+            }
+            elsif ( $want eq 'data' ) {
+                $self->_load->{data} = __clean_html_to_data( $self->_load->{canonical}{html} );
+            }
+        }
     }
 
-    return $text;
+    return ( $want eq 'data' ) ? $self->_load->{$want} : $self->_load->{canonical}{$want};
 }
 
-sub desmartify {
-    my ( $self, $text ) = @_;
-    ( my $new_text = $text ) =~ tr/\x{201c}\x{201d}\x{2018}\x{2019}/""''/;
-    return $new_text;
-}
-
-sub canonicalize {
-    my ( $self, $input_file, $output_file, $skip_wrapping ) = @_;
-    $output_file ||= $input_file;
-
-    $self->write_file(
-        $output_file,
-        $self->render(
-            $self->parse(
-                $self->read_file($input_file)
-            ),
-            $skip_wrapping,
-        )
-    );
-
-    return;
-}
+sub data { shift->_accessor(@_) }
+sub html { shift->_accessor(@_) }
+sub obml { shift->_accessor(@_) }
 
 1;
 __END__
@@ -526,6 +300,18 @@ cross-references, "red text", and quotes.
 
 OBML makes the assumption that content will exist in one text file per chapter
 and content mark-up will conform to the following specification:
+
+    ~...~   --> material reference
+    =...=   --> header
+    ==...== --> sub-header
+    |...|   --> verse number
+    {...}   --> cross-references
+    [...]   --> footnotes
+    *...*   --> red text
+    ^...^   --> italic
+    \...\   --> small-caps, divine-name
+    spaces  --> indenting
+    #       --> line comments
 
     ~...~    --> material reference
     =...=    --> header
