@@ -8,11 +8,16 @@ use exact::class;
 use Mojo::DOM;
 use Mojo::Util 'html_unescape';
 use Text::Wrap 'wrap';
+use Bible::Reference;
 
 # VERSION
 
 has _load        => {};
 has indent_width => 4;
+has reference    => Bible::Reference->new(
+    bible   => 'Protestant',
+    sorting => 1,
+);
 
 sub __ocd_tree ($node) {
     my $new_node;
@@ -44,7 +49,11 @@ sub __html_tree ($node) {
 
             return join( '',
                 '<', $node->{tag}, $attr, '>',
-                ( map { __html_tree($_) } @{ $node->{children} } ),
+                (
+                    ( $node->{children} )
+                        ? ( map { __html_tree($_) } @{ $node->{children} } )
+                        : ()
+                ),
                 '</', $node->{tag}, '>',
             );
         }
@@ -205,7 +214,46 @@ sub _obml_to_clean_html ( $self, $obml ) {
 sub _accessor ( $self, $input = undef ) {
     my $want = ( split( '::', ( caller(1) )[3] ) )[-1];
 
-    return $self->_load({ $want => $input }) if ($input);
+    if ($input) {
+        if ( ref $input ) {
+            my $data_refs_ocd;
+            $data_refs_ocd = sub ($node) {
+                if (
+                    $node->{tag} and $node->{children} and
+                    ( $node->{tag} eq 'crossref' or $node->{tag} eq 'footnote' )
+                ) {
+                    for ( grep { $_->{text} } @{ $node->{children} } ) {
+                        $_->{text} = $self->reference->acronyms(1)->clear->in( $_->{text} )->as_text;
+                    }
+                }
+                if ( $node->{children} ) {
+                    $data_refs_ocd->($_) for ( @{ $node->{children} } );
+                }
+                return;
+            };
+            $data_refs_ocd->($input);
+
+            my $reference = ( grep { $_->{tag} eq 'reference' } @{ $input->{children} } )[0]{children}[0];
+            my $runs = $self->reference->acronyms(0)->clear->in( $reference->{text} )->as_runs;
+            $reference->{text} = $runs->[0];
+        }
+        else {
+            my $ref_ocd = sub ( $text, $acronyms ) {
+                return $self->reference->acronyms($acronyms)->clear->in($text)->as_text;
+            };
+
+            $input =~ s!
+                ((?:<(?:footnote|crossref)>|\{|\[)\s*.+?\s*(?:</(?:footnote|crossref)>|\}|\]))
+            !
+                $ref_ocd->( $1, 1 )
+            !gex;
+
+            $input =~ s!((?:<reference>|~)\s*.+?\s*(?:</reference>|~))! $ref_ocd->( $1, 0 ) !gex;
+        }
+
+        return $self->_load({ $want => $input });
+    }
+
     return $self->_load->{data} if ( $want eq 'data' and $self->_load->{data} );
 
     unless ( $self->_load->{canonical}{$want} ) {
@@ -232,7 +280,9 @@ sub _accessor ( $self, $input = undef ) {
             $self->_load->{canonical}{html} = $self->_obml_to_clean_html( $self->_load->{obml} );
 
             if ( $want eq 'obml' ) {
-                $self->_load->{canonical}{obml} = $self->_clean_html_to_obml( $self->_load->{canonical}{html} );
+                $self->_load->{canonical}{obml} = $self->_clean_html_to_obml(
+                    $self->_load->{canonical}{html}
+                );
             }
             elsif ( $want eq 'data' ) {
                 $self->_load->{data} = __clean_html_to_data( $self->_load->{canonical}{html} );

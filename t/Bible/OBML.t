@@ -17,7 +17,7 @@ sub textualize {
 }
 
 my $obml = textualize(q$
-    ~ 2 Cor 6:8-12 ~
+    ~ 2 Corinthians 6:8-12 ~
 
     |8| Jesus said, "*I am the ^way^{Mt 5:29; Ro 14:13, 20; 1Co 3:9; 8:9, 13; 9:12;
     10:32; 2Co 5:20} and the truth and the light.* |9| *For it is written:*"
@@ -41,7 +41,7 @@ my $obml = textualize(q$
 $);
 
 my $html = textualize(q$
-    <obml><reference>2 Cor 6:8-12</reference>
+    <obml><reference>2 Corinthians 6:8-12</reference>
 
     <p><verse_number>8</verse_number>Jesus said, "<woj>I am the <i>way</i><crossref>Mt 5:29; Ro 14:13, 20; 1Co 3:9; 8:9, 13; 9:12; 10:32; 2Co 5:20</crossref> and the truth and the light.</woj> <verse_number>9</verse_number><woj>For it is written:</woj>"</p>
 
