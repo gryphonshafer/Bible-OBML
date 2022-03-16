@@ -12,9 +12,11 @@ use Bible::Reference;
 
 # VERSION
 
-has _load        => {};
-has indent_width => 4;
-has reference    => Bible::Reference->new(
+has _load             => {};
+has indent_width      => 4;
+has reference_acronym => 0;
+has fnxref_acronym    => 1;
+has reference         => Bible::Reference->new(
     bible   => 'Protestant',
     sorting => 1,
 );
@@ -223,7 +225,9 @@ sub _accessor ( $self, $input = undef ) {
                     ( $node->{tag} eq 'crossref' or $node->{tag} eq 'footnote' )
                 ) {
                     for ( grep { $_->{text} } @{ $node->{children} } ) {
-                        $_->{text} = $self->reference->acronyms(1)->clear->in( $_->{text} )->as_text;
+                        $_->{text} = $self->reference->acronyms(
+                            $self->fnxref_acronym
+                        )->clear->in( $_->{text} )->as_text;
                     }
                 }
                 if ( $node->{children} ) {
@@ -234,7 +238,10 @@ sub _accessor ( $self, $input = undef ) {
             $data_refs_ocd->($input);
 
             my $reference = ( grep { $_->{tag} eq 'reference' } @{ $input->{children} } )[0]{children}[0];
-            my $runs = $self->reference->acronyms(0)->clear->in( $reference->{text} )->as_runs;
+            my $runs      = $self->reference->acronyms(
+                $self->reference_acronym
+            )->clear->in( $reference->{text} )->as_runs;
+
             $reference->{text} = $runs->[0];
         }
         else {
@@ -245,10 +252,14 @@ sub _accessor ( $self, $input = undef ) {
             $input =~ s!
                 ((?:<(?:footnote|crossref)>|\{|\[)\s*.+?\s*(?:</(?:footnote|crossref)>|\}|\]))
             !
-                $ref_ocd->( $1, 1 )
+                $ref_ocd->( $1, $self->fnxref_acronym )
             !gex;
 
-            $input =~ s!((?:<reference>|~)\s*.+?\s*(?:</reference>|~))! $ref_ocd->( $1, 0 ) !gex;
+            $input =~ s!
+                ((?:<reference>|~)\s*.+?\s*(?:</reference>|~))
+            !
+                $ref_ocd->( $1, $self->reference_acronym )
+            !gex;
         }
 
         return $self->_load({ $want => $input });

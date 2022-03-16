@@ -5,7 +5,7 @@ my $self = Bible::OBML->new;
 isa_ok( $self, 'Bible::OBML' );
 
 can_ok( $self, $_ ) for ( qw(
-    indent_width
+    indent_width reference_acronym fnxref_acronym reference
     data html obml
 ) );
 
