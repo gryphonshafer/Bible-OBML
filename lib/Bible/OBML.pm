@@ -347,6 +347,7 @@ my(
     use Bible::OBML;
     my $bo = Bible::OBML->new;
 
+    use Bible::OBML::Gateway;
     my $gw   = Bible::OBML::Gateway->new;
     my $html = $gw->parse( $gw->fetch( 'Romans 12', 'NIV' ) );
 
