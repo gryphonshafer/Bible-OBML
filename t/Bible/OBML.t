@@ -5,18 +5,18 @@ my $self = Bible::OBML->new;
 isa_ok( $self, 'Bible::OBML' );
 
 can_ok( $self, $_ ) for ( qw(
-    indent_width reference_acronym fnxref_acronym reference
+    indent_width reference_acronym fnxref_acronym wrap_at wrap_lines wrap_indents reference
     data html obml
 ) );
 
-sub textualize {
+sub deindent {
     my $text = join( "\n", @_ );
     $text =~ s/^[ ]{4}//mg;
     $text =~ s/(?:^\s+|\s+$)//g;
     return $text;
 }
 
-my $obml = textualize(q$
+my $obml = deindent(q$
     ~ 2 Corinthians 6:8-12 ~
 
     |8| Jesus said, "*I am the ^way^{Mt 5:29; Ro 14:13, 20; 1Co 3:9; 8:9, 13; 9:12;
@@ -40,7 +40,7 @@ my $obml = textualize(q$
     |12| Then more stuff happened.
 $);
 
-my $html = textualize(q$
+my $html = deindent(q$
     <obml><reference>2 Corinthians 6:8-12</reference>
 
     <p><verse_number>8</verse_number>Jesus said, "<woj>I am the <i>way</i><crossref>Mt 5:29; Ro 14:13, 20; 1Co 3:9; 8:9, 13; 9:12; 10:32; 2Co 5:20</crossref> and the truth and the light.</woj> <verse_number>9</verse_number><woj>For it is written:</woj>"</p>

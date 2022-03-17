@@ -4,7 +4,7 @@ Bible::OBML - Open Bible Markup Language parser and renderer
 
 # VERSION
 
-version 1.18
+version 2.01
 
 [![test](https://github.com/gryphonshafer/Bible-OBML/workflows/test/badge.svg)](https://github.com/gryphonshafer/Bible-OBML/actions?query=workflow%3Atest)
 [![codecov](https://codecov.io/gh/gryphonshafer/Bible-OBML/graph/badge.svg)](https://codecov.io/gh/gryphonshafer/Bible-OBML)
@@ -12,19 +12,14 @@ version 1.18
 # SYNOPSIS
 
     use Bible::OBML;
-    my $self = Bible::OBML->new;
+    my $bo = Bible::OBML->new;
 
-    my $data_structure    = $self->parse($obml_text_content);
-    my $obml_text_content = $self->render( $data_structure, $skip_wrapping );
+    my $gw   = Bible::OBML::Gateway->new;
+    my $html = $gw->parse( $gw->fetch( 'Romans 12', 'NIV' ) );
 
-    my $content_with_smart_quotes    = $self->smartify($content);
-    my $content_without_smart_quotes = $self->desmartify($smart_content);
-
-    $self->canonicalize( $input_file, $output_file, $skip_wrapping );
-
-    # ...and because re-inventing the wheel is fun...
-    my $file_content = $self->read_file($filename);
-    $self->write_file( $filename, $content );
+    my $obml  = $bo->html($html)->obml;
+    my $data  = $bo->obml($obml)->data;
+    my $obml2 = $bo->data($data)->obml;
 
 # DESCRIPTION
 
@@ -33,177 +28,183 @@ Markup Language (OBML). OBML is a text markup way to represent Bible content,
 one whole text file per chapter. The goal or purpose of OBML is similar to
 Markdown in that it provides a human-readable text file allowing for simple and
 direct editing of content while maintaining context, footnotes,
-cross-references, "red text", and quotes.
+cross-references, "red text", and other basic formatting.
 
 ## Open Bible Markup Language (OBML)
 
 OBML makes the assumption that content will exist in one text file per chapter
-and content mark-up will conform to the following specification:
+and content mark-up will conform to the following specification (where "..."
+represents textual content):
 
-    ~...~    --> material reference
-    =...=    --> header
-    {...}    --> crossreferences
-    [...]    --> footnotes
-    *...*    --> red text
-    ^...^    --> italic
-    4 spaces --> blockquote (line by line)
-    6 spaces --> blockquote + indent (line by line)
-    |*|      --> notes the beginning of a verse (the "*" must be a number)
-    #        --> line comments
+    ~ ... ~   --> material reference
+    = ... =   --> header
+    == ... == --> sub-header
+    |...|     --> verse number
+    {...}     --> cross-references
+    [...]     --> footnotes
+    *...*     --> red text
+    ^...^     --> italic
+    \...\     --> small-caps
+    spaces    --> indenting
+    # ...     --> line comments
+                  (if "#" is the first non-whitespace character on the line)
 
-HTML/XML-like markup can be used throughout the content for additional markup
-not defined by the above specification. When OBML is parsed, such markup
-is ignored and passed through, treated like any other content of the verse.
+HTML-like markup can be used throughout the content for additional markup not
+defined by the above specification. When OBML is parsed, such markup is ignored
+and passed through, treated like any other content of the verse.
 
 An example of OBML follows, with several verses missing so as to save space:
 
-    ~ Jude 1 ~
+    ~ Mark 1 ~
 
-    |1| Jude, [or ^Judas^] {Mt 13:55; Mk 6:3; Jhn 14:22; Ac 1:13} a
-    slave [or ^servant^] {Ti 1:1} of Jesus Christ, and
-    brother of James, [or ^Jacob^] to those having been set apart [or
-    ^loved^ or ^sanctified^] in God ^the^ Father.
+    = John the Baptist Prepares the Way{Mt 3:1, 11; Lk 3:2, 16} =
 
-    = The Sin and Punishment of the Ungodly =
+    |1| The beginning of the good news about Jesus the Messiah,[Or ^Jesus Christ.^
+    ^Messiah^ (He) and ^Christ^ (Greek) both mean ^Anointed One.^] the Son of
+    God,[Some manuscripts do not have ^the SS of God.^]{Mt 4:3} |2| as it is
+    written in Isaiah the prophet:
 
-    |14| Enoch, {Ge 5:18; Ge 5:21-24} ^the^ seventh from Adam, also
-    prophesied to these saying:
+        “I will send my messenger ahead of you,
+            who will prepare your way”[Ml 3:1]{Ml 3:1; Mt 11:10; Lk 7:27}—
+        |3| “a voice of one calling in the wilderness,
+        ‘Prepare the way for the \Lord\,
+            make straight paths for him.’”[Is 40:3]{Is 40:3; Joh 1:23}
 
-        Behold, ^the^ Lord came with myriads of His saints [or ^holy
-        ones^] {De 33:2; Da 7:10; Mt 16:27; He 12:22}
-        |15| to do judgment against all {2Pt 2:6-9}.
+    |4| And so John the Baptist{Mt 3:1} appeared in the wilderness, preaching a
+    baptism of repentance{Mk 1:8; Joh 1:26, 33; Ac 1:5, 22; 11:16; 13:24; 18:25;
+    19:3-4} for the forgiveness of sins.{Lk 1:77}
 
-    |16| These are murmurers, complainers, {Nu 16:11; Nu 16:41; 1Co
-    10:10} following ^after^ [or ^according to^] their
-    lusts, {Jdg 1:18; 2Pt 2:10} and their mouths speak of proud things
-    {2Pt 2:18} ^showing admiration^ [literally ^admiring faces^] to gain
-    ^an advantage^. [literally ^for the sake of you^] {2Pt 2:3}
+    # cut verses 5-13 to save space
 
-When the OBML is parsed, it's turned into a uniform data structure. The data
-structure is an arrayref containing a hashref per verse. The hashrefs will have
-a "reference" key and a "content" key and an optional "header" key. Given OBML
-for Jude 1:14 as defined above, this is the data structure of the hashref for
-the verse:
+    = Jesus Announces the Good News{Mt 4:18, 22; Lk 5:2, 11; Joh 1:35, 42} =
 
-    'reference' => { 'verse' => '14', 'chapter' => '1', 'book' => 'Jude' },
-    'header'    => [ 'The Sin and Punishment of the Ungodly' ],
-    'content'   => [
-        'Enoch,',
-        [ 'crossreference', [ 'Ge 5:18', 'Ge 5:21-24' ] ],
-        [ 'italic', 'the' ],
-        'seventh from Adam, also prophesied to these saying:',
-        [ 'paragraph' ],
-        [
-            'blockquote',
-            'Behold,',
-            [ 'italic', 'the' ],
-            'Lord came with myriads of His saints',
-            [ 'footnote', 'or', [ 'italic', 'holy ones' ] ],
-            [
-                'crossreference',
-                [ 'De 33:2', 'Da 7:10', 'Mt 16:27', 'He 12:22' ],
-            ],
-        ],
-    ],
+    |14| After John{Mt 3:1} was put in prison, Jesus went into Galilee,{Mt 4:12}
+    proclaiming the good news of God.{Mt 4:23} *|15| “The time has come,”{Ro 5:6;
+    Ga 4:4; Ep 1:10}* he said. *“The kingdom of God has come near. Repent and
+    believe{Joh 3:15} the good news!”{Ac 20:21}*
 
-Note that even in the simplest of cases, both "header" and "content" will be
-arrayrefs around some number of strings. The "reference" key will always be
-a hashref with 3 keys. The structure of the values inside the arrayrefs of
-"header" and "content" can be (and usually are) nested.
+Typically, one might load OBML and render it into HTML-like output or a data
+structure.
+
+    my $html = Bible::OBML->new->obml($obml)->html;
+    my $data = Bible::OBML->new->obml($obml)->data;
 
 # METHODS
 
-## parse
+## obml
 
-This method accepts a single text string consisting of OBML. It parses the
-string and returns a data structure as described above.
+This method accepts OBML as input or if no input is provided outputs OBML
+converted from previous input.
 
-    my $data_structure = $self->parse($obml_text_content);
-
-## render
-
-This method accepts a data structure that conforms to the example description
-above and returns a rendered OBML text output. It can optionally accept
-a second input, which is a boolean, which if true will cause the method to
-skip the line-wrapping step.
-
-    my $obml_text_content = $self->render( $data_structure, $skip_wrapping );
-
-Normally, this method will take the text output and wrap long lines. By passing
-a second value which is true, you can cause the method to skip that step.
-
-## smartify, desmartify
-
-The intent of OBML is to store simple text files that you can use a basic text
-editor on. Some people prefer viewing content with so-called "smart" quotes in
-appropriate places. It is entirely possible to parse and render OBML as UTF8
-that includes these so-called "smart" quotes. However, in the typical case of
-pure ASCII, you may want to add or remove so-called "smart" quotes. Here's how:
-
-    my $content_with_smart_quotes    = $self->smartify($content);
-    my $content_without_smart_quotes = $self->desmartify($smart_content);
-
-## canonicalize
-
-This method requires an input filename and an output filename. It will read
-the input file, assume it's OBML, parse it, clean-up references, and render
-it back to OBML, and save it to the output filename.
-
-    $self->canonicalize( $input_file, $output_file, $skip_wrapping );
-
-You can optionally add a third input which is a boolean indicating if you want
-the method to skip line-wrapping. (See the `render()` method for more
-information.)
-
-The point of this method is if you happen to be writing in OBML manually and
-want to ensure your content is canonical OBML.
-
-## read\_file, write\_file
-
-Just in case you want to read or write a file directly, here are two methods
-that reinvent the wheel.
-
-    my $file_content = $self->read_file($filename);
-    $self->write_file( $filename, $content );
-
-# ATTRIBUTES
+    my $object = Bible::OBML->new->obml($obml);
+    say $object->obml;
 
 ## html
 
-This module has an attribute of "html" which contains a reference to an
-instance of [Bible::OBML::HTML](https://metacpan.org/pod/Bible%3A%3AOBML%3A%3AHTML).
+This method accepts a specific form of HTML-like input or if no input is
+provided outputs this HTML-like content converted from previous input.
 
-## acronyms
+    my $object = Bible::OBML->new->html($html);
+    say $object->html;
 
-By default, references will be canonicalized in acronym form; however, you can
-change that by setting the value of this accessor.
+HTML-like content might look something like this:
 
-    $self->acronyms(1); # use acronyms; default
-    $self->acronyms(0); # use full book names
+    <obml>
+        <reference>Mark 1</reference>
+        <header>
+            John the Baptist Prepares the Way
+            <crossref>Mt 3:1, 11; Lk 3:2, 16</crossref>
+        </header>
+        <p>
+            <verse_number>1</verse_number>
+            The beginning of the good news about Jesus the Messiah,
+            <footnote>
+                Or <i>Jesus Christ.</i> <i>Messiah</i> (He) and <i>Christ</i>
+                (Greek) both mean <i>Anointed One.</i>
+            </footnote> the Son of God...
+        </p>
+    </obml>
 
-## refs
+## data
 
-This is an accessor to a string that informs the OBML parser and renderer how
-to group canonicalized references. The string must be one of the following:
+This method accepts OBML as input or if no input is provided outputs OBML
+converted from previous input.
 
-- refs
-- as\_books (default)
-- as\_chapters
-- as\_runs
-- as\_verses
+    my $object = Bible::OBML->new->data($data);
+    use DDP;
+    p $object->data;
 
-These directly correspond to methods from [Bible::Reference](https://metacpan.org/pod/Bible%3A%3AReference). See that
-module's documentation for details.
+This data might look something like this:
 
-## bible
+    {
+        tag      => 'obml',
+        children => [
+            {
+                tag      => 'reference',
+                children => [ { text => 'John 1' } ],
+            },
+            {
+                tag      => 'p',
+                children => [
+                    {
+                        tag      => 'verse_number',
+                        children => [ { text => '1' } ],
+                    },
+                    { text => 'In the beginning' },
+                    {
+                        tag      => 'crossref',
+                        children => [ { text => 'Ge 1:1' } ],
+                    },
+                    { text => ' was...' },
+                ],
+            },
+        ],
+    };
 
-This is an accessor to a string value representing one of the Bible types
-supported by [Bible::Reference](https://metacpan.org/pod/Bible%3A%3AReference). By default, this is "Protestant" as per the
-default in [Bible::Reference](https://metacpan.org/pod/Bible%3A%3AReference). See that module's documentation for details.
+# ATTRIBUTES
+
+Attributes can be set in a call to `new` or explicitly as a get/set method.
+
+    my $bo = Bible::OBML->new( indent_width => 4, reference_acronym => 0 );
+    $bo->indent_width(4);
+    say $bo->reference_acronym;
+
+## indent\_width
+
+This attribute is an integer representing the number of spaces that will be
+considered a single level of indentation. It's set to a default of 4 spaces.
+
+## reference\_acronym
+
+By default, references in "reference" sections will be canonicalized to non-
+acronym form; however, you can change that by setting the value of this accessor
+to a true value.
+
+## fnxref\_acronym
+
+By default, references in all non-"reference" sections (i.e. cross-references
+and some footnotes) will be canonicalized to acronym form; however, you can
+change that by setting the value of this accessor to a false value.
+
+## wrap\_at
+
+By default, lines of OBML that are not indented will be wrapped at 80
+characters. You can adjust this point with this attribute.
+
+## wrap\_lines
+
+This is a boolean attribute, default to true, that stipulates whether or not
+wrapping of OBML lines happens.
+
+## wrap\_indents
+
+This is a boolean attribute, default to false, that stipulates whether or not
+wrapping of OBML indented lines happens. This value is ignored if `wrap_lines`
+is false.
 
 # SEE ALSO
 
-[Bible::OBML::HTML](https://metacpan.org/pod/Bible%3A%3AOBML%3A%3AHTML), [Bible::Reference](https://metacpan.org/pod/Bible%3A%3AReference).
+[Bible::OBML::Gateway](https://metacpan.org/pod/Bible%3A%3AOBML%3A%3AGateway), [Bible::Reference](https://metacpan.org/pod/Bible%3A%3AReference).
 
 You can also look for additional information at:
 
