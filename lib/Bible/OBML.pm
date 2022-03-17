@@ -1,7 +1,7 @@
 package Bible::OBML;
 # ABSTRACT: Open Bible Markup Language parser and renderer
 
-use 5.030;
+use 5.020;
 
 use exact;
 use exact::class;
@@ -207,7 +207,10 @@ sub _obml_to_clean_html ( $self, $obml ) {
     $obml =~ s|(\S)(?=\n\S)|$1<br>|g;
 
     $obml =~ s`(?:^|(?<=\n\n))(?!<(?:reference|sub_header|header)\b)`<p>`g;
-    $obml =~ s`(?<!</(?:reference|sub_header|header)>)(?:$|(?=\n\n))`</p>`g;
+    $obml =~ s`(?:$|(?=\n\n))`</p>`g;
+    $obml =~ s`(?<=</reference>)</p>``g;
+    $obml =~ s`(?<=</sub_header>)</p>``g;
+    $obml =~ s`(?<=</header>)</p>``g;
 
     $obml =~ s!\|(\d+)\|\s*!<verse_number>$1</verse_number>!g;
 
