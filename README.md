@@ -4,7 +4,7 @@ Bible::OBML - Open Bible Markup Language parser and renderer
 
 # VERSION
 
-version 2.03
+version 2.04
 
 [![test](https://github.com/gryphonshafer/Bible-OBML/workflows/test/badge.svg)](https://github.com/gryphonshafer/Bible-OBML/actions?query=workflow%3Atest)
 [![codecov](https://codecov.io/gh/gryphonshafer/Bible-OBML/graph/badge.svg)](https://codecov.io/gh/gryphonshafer/Bible-OBML)
@@ -190,18 +190,8 @@ change that by setting the value of this accessor to a false value.
 ## wrap\_at
 
 By default, lines of OBML that are not indented will be wrapped at 80
-characters. You can adjust this point with this attribute.
-
-## wrap\_lines
-
-This is a boolean attribute, default to true, that stipulates whether or not
-wrapping of OBML lines happens.
-
-## wrap\_indents
-
-This is a boolean attribute, default to false, that stipulates whether or not
-wrapping of OBML indented lines happens. This value is ignored if `wrap_lines`
-is false.
+characters. You can adjust this point with this attribute. If set to a false
+value, no wrapping will take place.
 
 # SEE ALSO
 
