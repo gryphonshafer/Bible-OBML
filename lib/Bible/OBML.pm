@@ -117,6 +117,7 @@ sub _clean_html_to_obml ( $self, $html ) {
 
     # de-XML
     $obml =~ s|</?obml>||g;
+#    $obml =~ s|</p>| </p>|g;
     $obml =~ s|</?p>||g;
     $obml =~ s|</?woj>|\*|g;
     $obml =~ s|</?i>|\^|g;
@@ -151,6 +152,7 @@ sub _clean_html_to_obml ( $self, $html ) {
         } split( /\n/, $obml ) ) . "\n";
     }
     $obml =~ s|<br>||g;
+#    $obml =~ s|[ ]+$||mg;
 
     chomp $obml;
     return $obml;
