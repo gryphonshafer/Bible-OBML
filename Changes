@@ -1,6 +1,8 @@
 Revision history for Bible::OBML
 
 {{$NEXT}}
+
+2.07      2024-05-02 11:56:45-07:00 America/Los_Angeles
         - Bug fix for handling Text::Wrap wanting to use tabs
         - Bug fix for OBML generation cleanup
 
