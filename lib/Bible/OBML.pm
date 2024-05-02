@@ -10,6 +10,8 @@ use Mojo::Util 'html_unescape';
 use Text::Wrap 'wrap';
 use Bible::Reference;
 
+$Text::Wrap::unexpand = 0;
+
 # VERSION
 
 has _load             => {};
@@ -145,8 +147,9 @@ sub _clean_html_to_obml ( $self, $html ) {
         $obml = join( "\n", map {
             unless ( s|<br>|| ) {
                 s/^(\s+)//;
-                $Text::Wrap::columns = $self->wrap_at - length( $1 || '' );
-                wrap( $1, $1, $_ );
+                my $header = $1 || '';
+                $Text::Wrap::columns = $self->wrap_at - length($header);
+                wrap( $header, $header, $_ );
             }
             else {
                 $_;
@@ -155,6 +158,8 @@ sub _clean_html_to_obml ( $self, $html ) {
     }
     $obml =~ s|<br>||g;
     $obml =~ s|[ ]+$||mg;
+    $obml =~ s/\n{3,}/\n\n/g;
+    $obml =~ s/^[ ]([^ ])/$1/mg;
 
     chomp $obml;
     return $obml;

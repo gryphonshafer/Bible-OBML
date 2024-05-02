@@ -1,6 +1,8 @@
 Revision history for Bible::OBML
 
 {{$NEXT}}
+        - Bug fix for handling Text::Wrap wanting to use tabs
+        - Bug fix for OBML generation cleanup
 
 2.06      2022-12-21 13:47:00-08:00 America/Los_Angeles
         - Deploy use of Bible::Reference's new chapter match flag
